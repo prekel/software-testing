@@ -1,0 +1,27 @@
+(lang dune 2.0)
+
+(name lab01-vector)
+
+
+
+
+
+(license ISC)
+
+(authors
+  "Vladislav Prekel")
+
+(maintainers
+  "Vladislav Prekel")
+
+(generate_opam_files true)
+
+(package
+ (name lab01-vector)
+ (synopsis "A short, but powerful statement about your project")
+ (description "A short, but powerful statement about your project")
+ (depends
+  (ocaml (>= 4.08.0))
+  dune
+  (alcotest :with-test)
+  (odoc :with-doc)))

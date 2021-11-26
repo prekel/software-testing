@@ -1,0 +1,4 @@
+(library
+ (name lab01_vector)
+ (public_name lab01-vector)
+ (libraries))
