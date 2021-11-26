@@ -1,47 +1,122 @@
 module type VEC = sig
   val n : int
 
-  type 'a t
+  type t
 
-  val fill : 'a -> 'a t
+  val zero : t
 
-  val map : ('a -> 'b) -> 'a t -> 'b t
+  val one : t
 
-  val zip_with : ('a -> 'b -> 'c) -> 'a t -> 'b t -> 'c t
+  val of_list : float list -> t
 
-  val fold : ('a -> 'b -> 'a) -> 'a -> 'b t -> 'a
+  val add : t -> t -> t
+
+  val sub : t -> t -> t
+
+  val mult : t -> float -> t
+
+  val dot_product : t -> t -> float
+
+  val length_squared : t -> float
+
+  val length : t -> float
+
+  module Infix : sig
+    val ( +^ ) : t -> t -> t
+
+    val ( -^ ) : t -> t -> t
+
+    val ( *^ ) : t -> float -> t
+
+    val ( ^* ) : float -> t -> t
+
+    val ( *.* ) : t -> t -> float
+  end
 end
 
 module VZ : VEC = struct
   let n = 0
 
-  type _ t = unit
+  type t = unit
 
-  let fill _ = ()
+  let zero = ()
 
-  let map _ _ = ()
+  let one = ()
 
-  let zip_with _ _ _ = ()
+  let of_list _ = ()
 
-  let fold _ a _ = a
+  let add _ _ = ()
+
+  let sub _ _ = ()
+
+  let mult _ _ = ()
+
+  let dot_product _ _ = 0.
+
+  let length_squared _ = 0.
+
+  let length _ = 0.
+
+  module Infix = struct
+    let ( +^ ) = add
+
+    let ( -^ ) = sub
+
+    let ( *^ ) = mult
+
+    let ( ^* ) a b = mult b a
+
+    let ( *.* ) = dot_product
+  end
 end
 
 module VS (V : VEC) : VEC = struct
   let n = V.n + 1
 
-  type 'a t = 'a * 'a V.t
+  type t = float * V.t
 
-  let fill a = (a, V.fill a)
+  let zero = (0., V.zero)
 
-  let map f (a, b) = (f a, V.map f b)
+  let one = (1., V.one)
 
-  let zip_with f (a, b) (c, d) = (f a c, V.zip_with f b d)
+  let of_list = function [] -> assert false | a :: b -> (a, V.of_list b)
 
-  let fold f z (a, b) = f (V.fold f z b) a
+  let add (a, x) (b, y) = (a +. b, V.add x y)
+
+  let sub (a, x) (b, y) = (a -. b, V.add x y)
+
+  let mult (a, x) k = (a *. k, V.mult x k)
+
+  let dot_product (a, x) (b, y) = (a *. b) +. V.dot_product x y
+
+  let length_squared (a, b) = (a *. a) +. V.length_squared b
+
+  let length a = sqrt @@ length_squared a
+
+  module Infix = struct
+    let ( +^ ) = add
+
+    let ( -^ ) = sub
+
+    let ( *^ ) = mult
+
+    let ( ^* ) a b = mult b a
+
+    let ( *.* ) = dot_product
+  end
+end
+
+module Vec2 = struct
+  include VS (VS (VZ))
+
+  let make a b = of_list [ a; b ]
 end
 
 module Vector1 = VS (VZ)
 module Vector2 = VS (Vector1)
+module Vector3 = VS (Vector2)
+module Vector4 = VS (Vector3)
+module Vector5 = VS (Vector4)
 
 let greet name = "Hello " ^ name ^ "!"
 
