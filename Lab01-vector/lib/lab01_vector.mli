@@ -6,3 +6,7 @@ val greet : string -> string
     {4 Examples}
 
     {[ print_endline @@ greet "Jane" ]} *)
+
+val n1 : int
+
+val n2 : int
