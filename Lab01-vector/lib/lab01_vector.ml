@@ -70,8 +70,10 @@ module VZ : VEC = struct
   let length _ = 0.
 end
 
+exception EmptyList of int
+
 module VS (V : VEC) = struct
-  module T : VEC = struct
+  module T = struct
     let n = V.n + 1
 
     type t = float * V.t
@@ -80,7 +82,16 @@ module VS (V : VEC) = struct
 
     let one = (1., V.one)
 
-    let of_list = function [] -> assert false | a :: b -> (a, V.of_list b)
+    exception NotEnough of { need : int; got : int; failed_on : int }
+
+    let of_list = function
+      | [] -> raise @@ EmptyList n
+      | a :: b -> begin
+          try (a, V.of_list b)
+          with EmptyList ni ->
+            raise
+            @@ NotEnough { need = n; got = List.length b + 1; failed_on = ni }
+        end
 
     let equal ?(eps = 1e-6) (a, x) (b, y) =
       let open Float in
@@ -107,26 +118,46 @@ module VS (V : VEC) = struct
     let length_squared (a, b) = (a *. a) +. V.length_squared b
 
     let length a = Float.sqrt @@ length_squared a
+
+    let of_vec a x : t = (a, x)
   end
 
   include T
   module Infix = MakeVecInfix (T)
 end
 
-module Vec2 = struct
-  include VS (VS (VZ))
+module Vector0 = struct
+  include VZ
 
-  let make a b : t = of_list [ a; b ]
+  let make () = VZ.zero
 end
 
-module Vector1 = VS (VZ)
-module Vector2 = VS (Vector1)
-module Vector3 = VS (Vector2)
-module Vector4 = VS (Vector3)
-module Vector5 = VS (Vector4)
+module Vector1 = struct
+  include VS (Vector0)
 
-let greet name = "Hello " ^ name ^ "!"
+  let make a = of_vec a (Vector0.make ())
+end
 
-let n1 = Vector1.n
+module Vector2 = struct
+  include VS (Vector1)
 
-let n2 = Vector2.n
+  let make a b = of_vec a (Vector1.make b)
+end
+
+module Vector3 = struct
+  include VS (Vector2)
+
+  let make a b c = of_vec a (Vector2.make b c)
+end
+
+module Vector4 = struct
+  include VS (Vector3)
+
+  let make a1 a2 a3 a4 = of_vec a1 (Vector3.make a2 a3 a4)
+end
+
+module Vector5 = struct
+  include VS (Vector4)
+
+  let make a1 a2 a3 a4 a5 = of_vec a1 (Vector4.make a2 a3 a4 a5)
+end
