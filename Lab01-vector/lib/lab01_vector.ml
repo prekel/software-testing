@@ -11,7 +11,7 @@ module type VEC = sig
 
   val equal : ?eps:float -> t -> t -> bool
 
-  val pp : t -> Format.formatter
+  val pp : ?start:bool -> Formatter.t -> t -> unit
 
   val show : t -> string
 
@@ -53,9 +53,9 @@ module VZ : VEC = struct
 
   let equal ?eps:_ _ _ = true
 
-  let pp _ = assert false
+  let pp ?(start = true) ppf a = if start then Caml.Format.fprintf ppf "()"
 
-  let show _ = assert false
+  let show _ = "()"
 
   let add _ _ = ()
 
@@ -94,11 +94,18 @@ module VS (V : VEC) : VEC = struct
   let of_list = function [] -> assert false | a :: b -> (a, V.of_list b)
 
   let equal ?(eps = 1e-6) (a, x) (b, y) =
-    abs_float (a -. b) < eps && V.equal x y ~eps
+    let open Float in
+    abs (a -. b) <= eps && V.equal x y ~eps
 
-  let pp _ = assert false
+  let pp ?(start = true) ppf (a, x) =
+    let open Caml.Format in
+    if start then pp_open_hbox ppf ();
+    pp_print_float ppf a;
+    pp_print_space ppf ();
+    V.pp ~start:false ppf x;
+    if start then pp_close_box ppf ()
 
-  let show _ = assert false
+  let show x = Caml.Format.asprintf "%a" (pp ~start:true) x
 
   let add (a, x) (b, y) = (a +. b, V.add x y)
 
@@ -110,7 +117,7 @@ module VS (V : VEC) : VEC = struct
 
   let length_squared (a, b) = (a *. a) +. V.length_squared b
 
-  let length a = sqrt @@ length_squared a
+  let length a = Float.sqrt @@ length_squared a
 
   module Infix = struct
     let ( +^ ) = add
