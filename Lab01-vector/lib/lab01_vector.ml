@@ -26,18 +26,18 @@ module type VEC = sig
   val length_squared : t -> float
 
   val length : t -> float
+end
 
-  module Infix : sig
-    val ( +^ ) : t -> t -> t
+module MakeVecInfix (V : VEC) = struct
+  let ( +^ ) = V.add
 
-    val ( -^ ) : t -> t -> t
+  let ( -^ ) = V.sub
 
-    val ( *^ ) : t -> float -> t
+  let ( *^ ) = V.mult
 
-    val ( ^* ) : float -> t -> t
+  let ( ^* ) a b = V.mult b a
 
-    val ( *.* ) : t -> t -> float
-  end
+  let ( *.* ) = V.dot_product
 end
 
 module VZ : VEC = struct
@@ -68,74 +68,55 @@ module VZ : VEC = struct
   let length_squared _ = 0.
 
   let length _ = 0.
-
-  module Infix = struct
-    let ( +^ ) = add
-
-    let ( -^ ) = sub
-
-    let ( *^ ) = mult
-
-    let ( ^* ) a b = mult b a
-
-    let ( *.* ) = dot_product
-  end
 end
 
-module VS (V : VEC) : VEC = struct
-  let n = V.n + 1
+module VS (V : VEC) = struct
+  module T : VEC = struct
+    let n = V.n + 1
 
-  type t = float * V.t
+    type t = float * V.t
 
-  let zero = (0., V.zero)
+    let zero = (0., V.zero)
 
-  let one = (1., V.one)
+    let one = (1., V.one)
 
-  let of_list = function [] -> assert false | a :: b -> (a, V.of_list b)
+    let of_list = function [] -> assert false | a :: b -> (a, V.of_list b)
 
-  let equal ?(eps = 1e-6) (a, x) (b, y) =
-    let open Float in
-    abs (a -. b) <= eps && V.equal x y ~eps
+    let equal ?(eps = 1e-6) (a, x) (b, y) =
+      let open Float in
+      abs (a -. b) <= eps && V.equal x y ~eps
 
-  let pp ?(start = true) ppf (a, x) =
-    let open Caml.Format in
-    if start then pp_open_hbox ppf ();
-    pp_print_float ppf a;
-    pp_print_space ppf ();
-    V.pp ~start:false ppf x;
-    if start then pp_close_box ppf ()
+    let pp ?(start = true) ppf (a, x) =
+      let open Caml.Format in
+      if start then pp_open_hbox ppf ();
+      pp_print_float ppf a;
+      pp_print_space ppf ();
+      V.pp ~start:false ppf x;
+      if start then pp_close_box ppf ()
 
-  let show x = Caml.Format.asprintf "%a" (pp ~start:true) x
+    let show x = Caml.Format.asprintf "%a" (pp ~start:true) x
 
-  let add (a, x) (b, y) = (a +. b, V.add x y)
+    let add (a, x) (b, y) = (a +. b, V.add x y)
 
-  let sub (a, x) (b, y) = (a -. b, V.add x y)
+    let sub (a, x) (b, y) = (a -. b, V.add x y)
 
-  let mult (a, x) k = (a *. k, V.mult x k)
+    let mult (a, x) k = (a *. k, V.mult x k)
 
-  let dot_product (a, x) (b, y) = (a *. b) +. V.dot_product x y
+    let dot_product (a, x) (b, y) = (a *. b) +. V.dot_product x y
 
-  let length_squared (a, b) = (a *. a) +. V.length_squared b
+    let length_squared (a, b) = (a *. a) +. V.length_squared b
 
-  let length a = Float.sqrt @@ length_squared a
-
-  module Infix = struct
-    let ( +^ ) = add
-
-    let ( -^ ) = sub
-
-    let ( *^ ) = mult
-
-    let ( ^* ) a b = mult b a
-
-    let ( *.* ) = dot_product
+    let length a = Float.sqrt @@ length_squared a
   end
+
+  include T
+  module Infix = MakeVecInfix (T)
 end
 
 module Vec2 = struct
   include VS (VS (VZ))
 
-  let make a b = of_list [ a; b ]
+  let make a b : t = of_list [ a; b ]
 end
 
 module Vector1 = VS (VZ)
