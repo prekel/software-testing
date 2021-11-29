@@ -9,6 +9,12 @@ module type VEC = sig
 
   val of_list : float list -> t
 
+  val equal : ?eps:float -> t -> t -> bool
+
+  val pp : t -> Format.formatter
+
+  val show : t -> string
+
   val add : t -> t -> t
 
   val sub : t -> t -> t
@@ -45,6 +51,12 @@ module VZ : VEC = struct
 
   let of_list _ = ()
 
+  let equal ?eps:_ _ _ = true
+
+  let pp _ = assert false
+
+  let show _ = assert false
+
   let add _ _ = ()
 
   let sub _ _ = ()
@@ -80,6 +92,13 @@ module VS (V : VEC) : VEC = struct
   let one = (1., V.one)
 
   let of_list = function [] -> assert false | a :: b -> (a, V.of_list b)
+
+  let equal ?(eps = 1e-6) (a, x) (b, y) =
+    abs_float (a -. b) < eps && V.equal x y ~eps
+
+  let pp _ = assert false
+
+  let show _ = assert false
 
   let add (a, x) (b, y) = (a +. b, V.add x y)
 
