@@ -14,6 +14,9 @@ module AlcotestExt = struct
                  after c
                in
                (name, mode, fn)))
+
+  let check_float ~msg ~expected ~actual ?(eps = 1e-6) =
+    check' ~msg ~expected:true ~actual:Float.(abs (expected - actual) <= eps)
 end
 
 let vf =
