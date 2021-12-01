@@ -45,18 +45,26 @@ module type VEC = sig
   val length : t -> float
 end
 
+(** Infix operations with vector *)
 module type VECINFIX = sig
+  (** [t] represents the vector*)
   type t
 
+  (** Module with operators itself *)
   module Infix : sig
+    (** [x +^ y] is sum of vector [x] and vector [y] *)
     val ( +^ ) : t -> t -> t
 
+    (** [x -^ y] is subtraction of vector [x] and vector [y] *)
     val ( -^ ) : t -> t -> t
 
+    (** [x *^ k] is vector [x] with lengths multiplied by [k] *)
     val ( *^ ) : t -> float -> t
 
+    (** [k ^* x] is vector [x] with lengths multiplied by [k] *)
     val ( ^* ) : float -> t -> t
 
+    (** [x *.* y] is scalar (dot) product of vector [x] and vector [y] *)
     val ( *.* ) : t -> t -> float
   end
 end
