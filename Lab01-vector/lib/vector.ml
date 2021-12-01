@@ -28,6 +28,22 @@ module type VEC = sig
   val length : t -> float
 end
 
+module type VECINFIX = sig
+  type t
+
+  module Infix : sig
+    val ( +^ ) : t -> t -> t
+
+    val ( -^ ) : t -> t -> t
+
+    val ( *^ ) : t -> float -> t
+
+    val ( ^* ) : float -> t -> t
+
+    val ( *.* ) : t -> t -> float
+  end
+end
+
 module MakeVecInfix (V : VEC) = struct
   let ( +^ ) = V.add
 
@@ -40,34 +56,39 @@ module MakeVecInfix (V : VEC) = struct
   let ( *.* ) = V.dot_product
 end
 
-module VZ : VEC = struct
-  let n = 0
+module VZ = struct
+  module T = struct
+    let n = 0
 
-  type t = unit
+    type t = unit
 
-  let zero = ()
+    let zero = ()
 
-  let one = ()
+    let one = ()
 
-  let of_list _ = ()
+    let of_list _ = ()
 
-  let equal ?eps:_ _ _ = true
+    let equal ?eps:_ _ _ = true
 
-  let pp ?(start = true) ppf a = if start then Caml.Format.fprintf ppf "()"
+    let pp ?(start = true) ppf a = if start then Caml.Format.fprintf ppf "()"
 
-  let show _ = "()"
+    let show _ = "()"
 
-  let add _ _ = ()
+    let add _ _ = ()
 
-  let sub _ _ = ()
+    let sub _ _ = ()
 
-  let mult _ _ = ()
+    let mult _ _ = ()
 
-  let dot_product _ _ = 0.
+    let dot_product _ _ = 0.
 
-  let length_squared _ = 0.
+    let length_squared _ = 0.
 
-  let length _ = 0.
+    let length _ = 0.
+  end
+
+  include T
+  module Infix = MakeVecInfix (T)
 end
 
 exception EmptyList of int
