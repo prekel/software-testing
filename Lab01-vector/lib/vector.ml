@@ -92,6 +92,7 @@ module VZ = struct
 end
 
 exception EmptyList of int
+exception NotEnough of { need : int; got : int; failed_on : int }
 
 module VS (V : VEC) = struct
   module T = struct
@@ -103,7 +104,7 @@ module VS (V : VEC) = struct
 
     let one = (1., V.one)
 
-    exception NotEnough of { need : int; got : int; failed_on : int }
+    
 
     let of_list = function
       | [] -> raise @@ EmptyList n
@@ -150,13 +151,13 @@ end
 module Vector0 = struct
   include VZ
 
-  let make () = VZ.zero
+  let make = VZ.zero
 end
 
 module Vector1 = struct
   include VS (Vector0)
 
-  let make a = of_vec a (Vector0.make ())
+  let make a = of_vec a (Vector0.make)
 end
 
 module Vector2 = struct

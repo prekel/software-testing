@@ -1,12 +1,19 @@
+exception NotEnough of { need : int; got : int; failed_on : int }
+
 module type VEC = sig
+  (** [n] is dimensions of vector *)
   val n : int
 
+  (** [t] represents the vector *)
   type t
 
+  (** [zero] is zero-length vector *)
   val zero : t
 
+  (** [one] is vector with [1] in all dimensions *)
   val one : t
 
+  (** [of_list lst] creates the vector. Raises: [NotEnough] if [List.length lst < n] *)
   val of_list : float list -> t
 
   val equal : ?eps:float -> t -> t -> bool
@@ -49,7 +56,7 @@ module Vector0 : sig
 
   include VECINFIX with type t := t
 
-  val make : unit -> t
+  val make : t
 end
 
 module Vector1 : sig
