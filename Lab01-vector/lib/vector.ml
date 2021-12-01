@@ -104,8 +104,6 @@ module VS (V : VEC) = struct
 
     let one = (1., V.one)
 
-    
-
     let of_list = function
       | [] -> raise @@ EmptyList n
       | a :: b -> begin

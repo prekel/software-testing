@@ -20,6 +20,8 @@ let vf =
 
 let test_hello_with_name name () = check' int ~msg:"" ~expected:2 ~actual:2
 
+let a = Lab01_vector.Vector.Vector1.make 1.
+
 let suite =
   [
     ("can greet Tom", `Quick, test_hello_with_name "Tom");
