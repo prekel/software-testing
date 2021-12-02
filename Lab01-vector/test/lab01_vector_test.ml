@@ -30,4 +30,4 @@ let suite =
 
 let () =
   Alcotest.run "lab01-vector"
-    [ ("Lab01_vector", suite); ("f", vf); ("", Vector2_test.suite) ]
+    [ ("Lab01_vector", suite); ("f", vf); Vector2_test.suite ]

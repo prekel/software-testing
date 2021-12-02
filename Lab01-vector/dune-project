@@ -2,17 +2,11 @@
 
 (name lab01-vector)
 
-
-
-
-
 (license MIT)
 
-(authors
-  "Vladislav Prekel")
+(authors "Vladislav Prekel")
 
-(maintainers
-  "Vladislav Prekel")
+(maintainers "Vladislav Prekel")
 
 (generate_opam_files true)
 
@@ -21,8 +15,10 @@
  (synopsis "A short, but powerful statement about your project")
  (description "A short, but powerful statement about your project")
  (depends
-  (ocaml (>= 4.08.0))
+  (ocaml
+   (>= 4.08.0))
   dune
   (base :build)
   (alcotest :with-test)
+  (ppx_deriving :build)
   (odoc :with-doc)))
