@@ -7,11 +7,9 @@ val fixtures_parameterized :
   (string * Alcotest.speed_level * (unit -> unit)) list
 
 val check_float :
-  msg:string ->
-  expected:float ->
-  actual:float ->
-  ?eps:float ->
-  ?here:Lexing.position ->
-  ?pos:Alcotest.Source_code_position.pos ->
-  bool Alcotest.testable ->
-  unit
+  ?eps:float -> msg:string -> expected:float -> actual:float -> unit
+
+module CheckVector (V : Lab01_vector.Vector.VEC) : sig
+  val check_vector :
+    ?eps:float -> msg:string -> expected:V.t -> actual:V.t -> unit
+end

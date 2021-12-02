@@ -21,8 +21,9 @@ module type VEC = sig
   (** [one] is vector with [1] in all dimensions (unit vector) *)
 
   val of_list : float list -> t
-  (** [of_list lst] is vector created from list [lst]. @raise: [NotEnough] if
-      [List.length lst < n] *)
+  (** [of_list lst] is vector created from list [lst].
+
+      @raise NotEnough if [List.length lst < n] *)
 
   val equal : ?eps:float -> t -> t -> bool
   (** [equal ~eps x y] is result of equality comparing with given accuracy [eps]

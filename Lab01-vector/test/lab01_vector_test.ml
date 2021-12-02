@@ -28,4 +28,6 @@ let suite =
     ("can greet John", `Quick, test_hello_with_name "John");
   ]
 
-let () = Alcotest.run "lab01-vector" [ ("Lab01_vector", suite); ("f", vf) ]
+let () =
+  Alcotest.run "lab01-vector"
+    [ ("Lab01_vector", suite); ("f", vf); ("", Vector2_test.suite) ]

@@ -92,6 +92,7 @@ module VZ = struct
 end
 
 exception EmptyList of int
+
 exception NotEnough of { need : int; got : int; failed_on : int }
 
 module VS (V : VEC) = struct
@@ -155,7 +156,7 @@ end
 module Vector1 = struct
   include VS (Vector0)
 
-  let make a = of_vec a (Vector0.make)
+  let make a = of_vec a Vector0.make
 end
 
 module Vector2 = struct
