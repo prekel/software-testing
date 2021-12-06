@@ -10,12 +10,15 @@ let fixtures_parameterized ~before ~after ~params ~param_to_string ~tests =
                tst c p;
                after c
              in
-             (msg, mode, fn)))
+             msg, mode, fn))
+;;
 
 let check_float ?(eps = 1e-6) ~msg ~expected ~actual =
   check' bool ~msg ~expected:true ~actual:Float.(abs (expected - actual) <= eps)
+;;
 
 module CheckVector (V : Lab01_vector.Vector.VEC) = struct
   let check_vector ?(eps = 1e-6) ~msg ~expected ~actual =
     check' bool ~msg ~expected:true ~actual:(V.equal ~eps actual expected)
+  ;;
 end
