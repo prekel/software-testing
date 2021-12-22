@@ -139,4 +139,55 @@ module Eq = struct
   ;;
 end
 
-let suite = "2D Vector tests", Add.tests |> List.append Sub.tests |> List.append Eq.tests
+module Length = struct
+  type test_param_length =
+    { msg : string
+    ; vec : float * float
+    ; expected : float
+    ; expected_squared : float
+    ; eps : float
+    }
+
+  let test_length () { vec = vx, vy; expected; expected_squared; eps } =
+    (* Arrange *)
+    let v = Vector2.make vx vy in
+    (* Act *)
+    let actual = Vector2.length v in
+    let actual_squared = Vector2.length_squared v in
+    (* Assert *)
+    check_float ~eps ~msg:"Check length" ~expected ~actual;
+    check_float
+      ~eps
+      ~msg:"Check squared length"
+      ~expected:expected_squared
+      ~actual:actual_squared
+  ;;
+
+  let tests =
+    fixtures_parameterized
+      ~before:Fn.id
+      ~after:Fn.id
+      ~params:
+        [ { msg = "All zeros"
+          ; vec = 0., 0.
+          ; expected = 0.
+          ; expected_squared = 0.
+          ; eps = 0.
+          }
+        ; { msg = "len(2,0) = 2"
+          ; vec = 2., 0.
+          ; expected = 2.
+          ; expected_squared = 4.
+          ; eps = 1e-8
+          }
+        ]
+      ~param_to_string:(fun { msg } -> msg)
+      ~tests:[ "Length", `Quick, test_length ]
+  ;;
+end
+
+let suite =
+  ( "2D Vector tests"
+  , Add.tests |> List.append Sub.tests |> List.append Eq.tests |> List.append Length.tests
+  )
+;;
