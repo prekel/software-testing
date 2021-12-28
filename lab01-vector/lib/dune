@@ -1,6 +1,6 @@
 (library
- (name lab01_vector)
- (public_name lab01-vector)
+ (name lab02_vector)
+ (public_name lab02-vector)
  (modules (:standard))
  (libraries base)
  (flags -open Base))

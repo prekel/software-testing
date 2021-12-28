@@ -17,7 +17,7 @@ let check_float ?(eps = 1e-6) ~msg ~expected ~actual =
   check' bool ~msg ~expected:true ~actual:Float.(abs (expected - actual) <= eps)
 ;;
 
-module CheckVector (V : Lab01_vector.Vector.VEC) = struct
+module CheckVector (V : Lab02_vector.Vector.VEC) = struct
   let check_vector ?(eps = 1e-6) ~msg ~expected ~actual =
     check' bool ~msg ~expected:true ~actual:(V.equal ~eps actual expected)
   ;;

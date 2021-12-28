@@ -1,0 +1,7 @@
+(tests
+ (names lab02_vector_test)
+ (package lab02-vector)
+ (libraries alcotest lab02_vector base)
+ (flags -open Base)
+ (preprocess
+  (pps ppx_deriving.show)))

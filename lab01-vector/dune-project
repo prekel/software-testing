@@ -1,6 +1,6 @@
 (lang dune 2.0)
 
-(name lab01-vector)
+(name lab02-vector)
 
 (license MIT)
 
@@ -11,7 +11,7 @@
 (generate_opam_files true)
 
 (package
- (name lab01-vector)
+ (name lab02-vector)
  (synopsis "A short, but powerful statement about your project")
  (description "A short, but powerful statement about your project")
  (depends

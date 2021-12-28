@@ -49,18 +49,18 @@ make servedoc
 
 ### Repository Structure
 
-The following snippet describes lab01-vector's repository structure.
+The following snippet describes lab02-vector's repository structure.
 
 ```text
 .
 ├── bin/
-|   Source for lab01-vector's binary. This links to the library defined in `lib/`.
+|   Source for lab02-vector's binary. This links to the library defined in `lib/`.
 │
 ├── lib/
-|   Source for lab01-vector's library. Contains lab01-vector's core functionnalities.
+|   Source for lab02-vector's library. Contains lab02-vector's core functionnalities.
 │
 ├── test/
-|   Unit tests and integration tests for lab01-vector.
+|   Unit tests and integration tests for lab02-vector.
 │
 ├── dune-project
 |   Dune file used to mark the root of the project and define project-wide parameters.
@@ -73,7 +73,7 @@ The following snippet describes lab01-vector's repository structure.
 │
 ├── README.md
 │
-└── lab01-vector.opam
+└── lab02-vector.opam
     Opam package definition.
     To know more about creating and publishing opam packages, see https://opam.ocaml.org/doc/Packaging.html.
 ```

@@ -1,4 +1,4 @@
-# lab01-vector
+# lab02-vector
 
 Requirements: [opam](https://opam.ocaml.org/).
 

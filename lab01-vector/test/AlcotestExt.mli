@@ -8,6 +8,6 @@ val fixtures_parameterized
 
 val check_float : ?eps:float -> msg:string -> expected:float -> actual:float -> unit
 
-module CheckVector (V : Lab01_vector.Vector.VEC) : sig
+module CheckVector (V : Lab02_vector.Vector.VEC) : sig
   val check_vector : ?eps:float -> msg:string -> expected:V.t -> actual:V.t -> unit
 end

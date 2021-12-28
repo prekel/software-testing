@@ -1,6 +1,6 @@
 open Alcotest
 open AlcotestExt
-module Vector2 = Lab01_vector.Vector.Vector2
+module Vector2 = Lab02_vector.Vector.Vector2
 open CheckVector (Vector2)
 
 module Add = struct
