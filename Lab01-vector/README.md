@@ -1,29 +1,11 @@
 # lab01-vector
 
-A short, but powerful statement about your project
+Requirements: [opam](https://opam.ocaml.org/).
 
-## Installation
+## Intall dependencies, build and run tests
 
-### Using Opam
-
-```bash
-opam install inquire
+```sh
+make switch
+make build
+make test
 ```
-
-### Using Esy
-
-```bash
-esy add @opam/inquire
-```
-
-## Usage
-
-### In OCaml
-
-```ocaml
-let () = Lab01_vector.greet "World"
-```
-
-## Contributing
-
-Take a look at our [Contributing Guide](CONTRIBUTING.md).
