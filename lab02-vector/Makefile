@@ -72,3 +72,7 @@ release: all ## Run the release script
 	opam exec -- dune-release publish distrib -y
 	opam exec -- dune-release opam pkg
 	opam exec -- dune-release opam submit --no-auto-open -y
+
+.PHONY: coverage
+coverage: ## Run coverage
+	opam exec -- dune runtest --instrument-with bisect_ppx --force
