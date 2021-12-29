@@ -1,6 +1,7 @@
 (library
  (name lab02_vector)
  (public_name lab02-vector)
+ (instrumentation (backend bisect_ppx))
  (modules (:standard))
  (libraries base)
  (flags -open Base))

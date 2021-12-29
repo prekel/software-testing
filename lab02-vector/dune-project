@@ -1,4 +1,4 @@
-(lang dune 2.0)
+(lang dune 2.7)
 
 (name lab02-vector)
 
@@ -20,5 +20,5 @@
   dune
   (base :build)
   (alcotest :with-test)
-  (ppx_deriving :build)
+  (bisect_ppx :dev)
   (odoc :with-doc)))
