@@ -2,10 +2,10 @@
 
 Requirements: [opam](https://opam.ocaml.org/).
 
-## Intall dependencies, build and run tests
+## Intall dependencies, build and run tests witch coverage
 
 ```sh
 make switch
 make build
-make test
+make coverage
 ```
