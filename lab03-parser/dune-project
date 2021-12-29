@@ -1,0 +1,24 @@
+(lang dune 2.7)
+
+(name lab03-parser)
+
+(license MIT)
+
+(authors "Vladislav Prekel")
+
+(maintainers "Vladislav Prekel")
+
+(generate_opam_files true)
+
+(package
+ (name lab03-parser)
+ (synopsis "A short, but powerful statement about your project")
+ (description "A short, but powerful statement about your project")
+ (depends
+  (ocaml
+   (>= 4.08.0))
+  dune
+  (base :build)
+  (alcotest :with-test)
+  (bisect_ppx :dev)
+  (odoc :with-doc)))

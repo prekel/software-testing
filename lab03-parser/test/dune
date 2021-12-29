@@ -1,0 +1,5 @@
+(tests
+ (names lab03_parser_test)
+ (package lab03-parser)
+ (libraries alcotest lab03_parser base)
+ (flags -open Base))

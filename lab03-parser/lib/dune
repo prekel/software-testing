@@ -1,0 +1,7 @@
+(library
+ (name lab03_parser)
+ (public_name lab03-parser)
+ (instrumentation (backend bisect_ppx))
+ (modules (:standard))
+ (libraries base)
+ (flags -open Base))
