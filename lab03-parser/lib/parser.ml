@@ -7,14 +7,16 @@ type token =
   | EmptyString
   | Error
 
-let token_to_string = function
-  | Number n -> "Number" ^ Int.to_string n
-  | Plus -> "Plus"
-  | Minus -> "Minus"
-  | Mult -> "Mult"
-  | Div -> "Div"
-  | EmptyString -> "EmptyString"
-  | Error -> "Error"
+let token_pp ppf =
+  let open Caml.Format in
+  function
+  | Number n -> fprintf ppf "Number(%d)" n
+  | Plus -> fprintf ppf "Plus"
+  | Minus -> fprintf ppf "Minus"
+  | Mult -> fprintf ppf "Mult"
+  | Div -> fprintf ppf "Div"
+  | EmptyString -> fprintf ppf "EmptyString"
+  | Error -> fprintf ppf "Error"
 ;;
 
 let process_line = function

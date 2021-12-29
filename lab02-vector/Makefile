@@ -75,4 +75,5 @@ release: all ## Run the release script
 
 .PHONY: coverage
 coverage: ## Run coverage
+	find . -name '*.coverage' | xargs rm -f
 	opam exec -- dune runtest --instrument-with bisect_ppx --force

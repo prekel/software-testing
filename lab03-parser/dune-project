@@ -20,5 +20,5 @@
   dune
   (base :build)
   (alcotest :with-test)
-  (bisect_ppx :dev)
+  (bisect_ppx :with-test)
   (odoc :with-doc)))
