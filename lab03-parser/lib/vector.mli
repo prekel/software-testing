@@ -7,7 +7,7 @@ exception
     }
 
 (** A vector with [n] dimensions which uses [float] as type for numbers *)
-module type VEC = sig
+module type VECTOR = sig
   (** [t] represents the vector *)
   type t [@@deriving sexp]
 
@@ -45,12 +45,6 @@ module type VEC = sig
 
   (** [length x] is length of vector [x] *)
   val length : t -> float
-end
-
-(** Infix operations with vector *)
-module type VECTOR = sig
-  (** [t] represents the vector*)
-  type t
 
   (** Module with operators itself *)
   module Infix : sig
@@ -78,8 +72,7 @@ end
 
 (** Degenerate vector (0 dimension) *)
 module Vector0 : sig
-  include VEC
-  include VECTOR with type t := t
+  include VECTOR
 
   (** [make] is single instance of 0-dimension degenerate vector *)
   val make : t
@@ -87,8 +80,7 @@ end
 
 (** 1-dimension vector*)
 module Vector1 : sig
-  include VEC
-  include VECTOR with type t := t
+  include VECTOR
 
   (** [make x1] is 1-dimension vector with length [x1] *)
   val make : float -> t
@@ -96,8 +88,7 @@ end
 
 (** 2-dimension vector *)
 module Vector2 : sig
-  include VEC
-  include VECTOR with type t := t
+  include VECTOR
 
   (** [make x1 x2] is 2-dimension vector with coords [x1] and [x2] *)
   val make : float -> float -> t

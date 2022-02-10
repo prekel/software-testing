@@ -17,7 +17,9 @@ module type VEC = sig
 end
 
 module type VECTOR = sig
-  type t
+  type t [@@deriving sexp]
+
+  include VEC with type t := t
 
   module Infix : sig
     val ( = ) : t -> t -> bool

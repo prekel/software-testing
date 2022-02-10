@@ -1,3 +1,4 @@
+(** [error] represents the parser error *)
 type error =
   | NoParens
   | OneNumberFail
