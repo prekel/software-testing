@@ -1,12 +1,16 @@
+type error =
+  | NoParens
+  | OneNumberFail
+  | TwoNumberFail
+  | TooMany
+[@@deriving sexp]
+
 (** [token] represents the parsed token *)
 type token =
-  | Number of int
-  | Plus
-  | Minus
-  | Mult
-  | Div
-  | EmptyString
-  | Error
+  | Empty
+  | OneNumber of float
+  | TwoNumbers of float * float
+  | Error of error
 [@@deriving sexp]
 
 (** [process_line str] returns parsed token *)

@@ -1,10 +1,9 @@
 open Core
 
 module type VEC = sig
-  val n : int
-
   type t [@@deriving sexp]
 
+  val n : int
   val zero : t
   val one : t
   val of_list : float list -> t
@@ -17,7 +16,7 @@ module type VEC = sig
   val length : t -> float
 end
 
-module type VECINFIX = sig
+module type VECTOR = sig
   type t
 
   module Infix : sig
@@ -28,6 +27,8 @@ module type VECINFIX = sig
     val ( ^* ) : float -> t -> t
     val ( *.* ) : t -> t -> float
   end
+
+  val parse : string -> t option
 end
 
 module MakeVecInfix (V : VEC) = struct
@@ -89,11 +90,7 @@ module VS (V : VEC) = struct
         end
     ;;
 
-    let equal (a, x) (b, y) =
-      let open Float.Robustly_comparable in
-      a =. b && V.equal x y
-    ;;
-
+    let equal (a, x) (b, y) = Float.Robustly_comparable.(a =. b) && V.equal x y
     let add (a, x) (b, y) = a +. b, V.add x y
     let sub (a, x) (b, y) = a -. b, V.sub x y
     let mult (a, x) k = a *. k, V.mult x k
@@ -111,34 +108,34 @@ module Vector0 = struct
   include VZ
 
   let make = VZ.zero
+
+  let parse s =
+    match Parser.process_line s with
+    | Empty -> Some make
+    | _ -> None
+  ;;
 end
 
 module Vector1 = struct
   include VS (Vector0)
 
   let make a = of_vec a Vector0.make
+
+  let parse s =
+    match Parser.process_line s with
+    | OneNumber x -> Some (make x)
+    | _ -> None
+  ;;
 end
 
 module Vector2 = struct
   include VS (Vector1)
 
   let make a b = of_vec a (Vector1.make b)
-end
 
-module Vector3 = struct
-  include VS (Vector2)
-
-  let make a b c = of_vec a (Vector2.make b c)
-end
-
-module Vector4 = struct
-  include VS (Vector3)
-
-  let make a1 a2 a3 a4 = of_vec a1 (Vector3.make a2 a3 a4)
-end
-
-module Vector5 = struct
-  include VS (Vector4)
-
-  let make a1 a2 a3 a4 a5 = of_vec a1 (Vector4.make a2 a3 a4 a5)
+  let parse s =
+    match Parser.process_line s with
+    | TwoNumbers (x, y) -> Some (make x y)
+    | _ -> None
+  ;;
 end
