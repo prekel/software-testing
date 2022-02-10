@@ -18,7 +18,7 @@
   (ocaml
    (>= 4.08.0))
   dune
-  (base :build)
-  (alcotest :with-test)
+  (core :build)
+  (ppx_jane :build)
   (bisect_ppx :with-test)
   (odoc :with-doc)))

@@ -1,5 +1,6 @@
-(tests
- (names lab03_parser_test)
- (package lab03-parser)
- (libraries alcotest lab03_parser base)
- (flags -open Base))
+(library
+ (name lab03_parser_test)
+ (libraries core lab03_parser)
+ (preprocess
+  (pps ppx_jane))
+ (inline_tests))
