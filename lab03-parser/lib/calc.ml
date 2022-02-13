@@ -33,16 +33,18 @@ module Actions = struct
     | Reset
 end
 
-module StateMachine = struct
+module type Calcs = sig
+  type num
+  type op
+
+  val calculate : op -> num -> num -> num option
+end
+
+module StateMachine (Calcs : Calcs) = struct
   open States
   open Actions
 
-  type a
-  type b
-
-  let doop (_acc : a) (_arg : a) (_op : b) : a option = None
-
-  let update (state : (a, b) States.t) action =
+  let update state action =
     match state, action with
     | _, Reset -> WaitInitial
     | _, Invalid -> ErrorInput state
@@ -59,7 +61,7 @@ module StateMachine = struct
     | Calculation _, (Empty | Num _ | Op _) -> ErrorState state
     | Calculation { acc; acc'; op; _ }, Back -> WaitArgument { acc; acc'; op }
     | Calculation { acc; acc'; op; arg }, Calculate ->
-      (match doop acc arg op with
+      (match Calcs.calculate op acc arg with
       | Some acc -> WaitOperation { acc; acc' }
       | None -> ErrorOperation state)
     | (ErrorState old_state | ErrorInput old_state | ErrorOperation old_state), Back ->
