@@ -1,38 +1,3 @@
-module States = struct
-  type ('a, 'b) t =
-    | WaitInitial
-    | WaitOperation of
-        { acc : 'a
-        ; acc' : 'a
-        }
-    | WaitArgument of
-        { acc : 'a
-        ; acc' : 'a
-        ; op : 'b
-        }
-    | Calculation of
-        { acc : 'a
-        ; acc' : 'a
-        ; op : 'b
-        ; arg : 'a
-        }
-    | ErrorState of ('a, 'b) t
-    | ErrorInput of ('a, 'b) t
-    | ErrorOperation of ('a, 'b) t
-    | Finish of 'a
-end
-
-module Actions = struct
-  type ('a, 'b) t =
-    | Num of 'a
-    | Op of 'b
-    | Empty
-    | Invalid
-    | Calculate
-    | Back
-    | Reset
-end
-
 module type Calcs = sig
   type num
   type op
@@ -40,11 +5,52 @@ module type Calcs = sig
   val calculate : op -> num -> num -> num option
 end
 
+module States (Calcs : Calcs) = struct
+  open Calcs
+
+  type t =
+    | WaitInitial
+    | WaitOperation of
+        { acc : num
+        ; acc' : num
+        }
+    | WaitArgument of
+        { acc : num
+        ; acc' : num
+        ; op : op
+        }
+    | Calculation of
+        { acc : num
+        ; acc' : num
+        ; op : op
+        ; arg : num
+        }
+    | ErrorState of t
+    | ErrorInput of t
+    | ErrorOperation of t
+    | Finish of num
+end
+
+module Actions (Calcs : Calcs) = struct
+  open Calcs
+
+  type t =
+    | Num of num
+    | Op of op
+    | Empty
+    | Invalid
+    | Calculate
+    | Back
+    | Reset
+end
+
 module StateMachine (Calcs : Calcs) = struct
-  open States
-  open Actions
+  module States = States (Calcs)
+  module Actions = Actions (Calcs)
 
   let update state action =
+    let open States in
+    let open Actions in
     match state, action with
     | _, Reset -> WaitInitial
     | _, Invalid -> ErrorInput state
