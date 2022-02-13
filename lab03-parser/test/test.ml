@@ -3,7 +3,10 @@ open Lab03_parser
 
 let%test_module "parser" =
   (module struct
-    module P = Parser
+    module P = struct
+      include Parser.Parser
+      include Parser
+    end
 
     let%expect_test "process_line" =
       print_s [%sexp (P.process_line "" : (P.token, P.error) Result.t)];
@@ -48,9 +51,9 @@ let%test_module "parser" =
   end)
 ;;
 
-module V0 = Vector.Vector0 (Parser)
-module V1 = Vector.Vector1 (Parser)
-module V2 = Vector.Vector2 (Parser)
+module V0 = Vector.Vector0 (Parser.Parser)
+module V1 = Vector.Vector1 (Parser.Parser)
+module V2 = Vector.Vector2 (Parser.Parser)
 
 let%test_module "vector parsing tests" =
   (module struct
