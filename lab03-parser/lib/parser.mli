@@ -11,6 +11,9 @@ type token =
   | Empty
   | OneNumber of float
   | TwoNumbers of float * float
+  | Back 
+  | Reset 
+  | Calculate 
 [@@deriving sexp]
 
 module type S = sig

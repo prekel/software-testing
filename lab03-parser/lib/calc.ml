@@ -1,11 +1,11 @@
 module type Calcs = sig
-  type num
-  type op
+  type num [@@deriving sexp]
+  type op [@@deriving sexp]
 
   val calculate : op -> num -> num -> num option
 end
 
-module States (Calcs : Calcs) = struct
+module MakeStates (Calcs : Calcs) = struct
   open Calcs
 
   type t =
@@ -29,9 +29,10 @@ module States (Calcs : Calcs) = struct
     | ErrorInput of t
     | ErrorOperation of t
     | Finish of num
+  [@@deriving sexp]
 end
 
-module Actions (Calcs : Calcs) = struct
+module MakeActions (Calcs : Calcs) = struct
   open Calcs
 
   type t =
@@ -42,15 +43,16 @@ module Actions (Calcs : Calcs) = struct
     | Calculate
     | Back
     | Reset
+  [@@deriving sexp]
 end
 
 module StateMachine (Calcs : Calcs) = struct
-  module States = States (Calcs)
-  module Actions = Actions (Calcs)
+  module State = MakeStates (Calcs)
+  module Action = MakeActions (Calcs)
 
   let update state action =
-    let open States in
-    let open Actions in
+    let open State in
+    let open Action in
     match state, action with
     | _, Reset -> WaitInitial
     | _, Invalid -> ErrorInput state
