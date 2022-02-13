@@ -48,9 +48,9 @@ let%test_module "parser" =
   end)
 ;;
 
-module V0 = Vector.Vector0
-module V1 = Vector.Vector1
-module V2 = Vector.Vector2
+module V0 = Vector.Vector0 (Parser)
+module V1 = Vector.Vector1 (Parser)
+module V2 = Vector.Vector2 (Parser)
 
 let%test_module "vector parsing tests" =
   (module struct
@@ -61,14 +61,14 @@ let%test_module "vector parsing tests" =
     ;;
 
     let%expect_test "vec" =
-      let a = Lab03_parser.Vector.Vector2.make 1. 2. in
-      print_s [%sexp (a : Lab03_parser.Vector.Vector2.t)];
+      let a = V2.make 1. 2. in
+      print_s [%sexp (a : V2.t)];
       [%expect {| (1 (2 ())) |}]
     ;;
 
     let%expect_test "parse vector0" =
       let a = V0.parse "()" |> Option.value_exn in
-      print_s [%sexp (a : Lab03_parser.Vector.Vector0.t)];
+      print_s [%sexp (a : V0.t)];
       [%expect {| () |}]
     ;;
   end)
