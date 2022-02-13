@@ -67,12 +67,12 @@ create_switch: ## Create an opam switch without any dependency
 	opam switch create . 4.13.1 --no-install -y
 
 .PHONY: dev_deps
-dev_deps: ## Install development dependencies
-	opam install --deps-only ./dev.opam 
+dev_deps: ## Install dependencies and development dependencies 
+	opam install --deps-only --with-test --with-doc . -y
 
 .PHONY: deps
 deps: ## Install dependencies
-	opam install --deps-only --with-test --with-doc ./lab03-parser.opam
+	opam install --deps-only . -y
 
 .PHONY: coverage
 coverage: ## Run coverage
