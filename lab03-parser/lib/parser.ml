@@ -15,9 +15,8 @@ type token =
 
 let process_line line =
   let without_parens =
-    Option.Let_syntax.(
-      let%bind without_prefix = String.chop_prefix ~prefix:"(" line in
-      String.chop_suffix ~suffix:")" without_prefix)
+    let%bind.Option without_prefix = String.chop_prefix ~prefix:"(" line in
+    String.chop_suffix ~suffix:")" without_prefix
   in
   match without_parens with
   | Some l ->

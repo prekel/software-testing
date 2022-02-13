@@ -22,3 +22,9 @@
   (ppx_jane :build)
   (bisect_ppx :with-test)
   (odoc :with-doc)))
+
+(package
+ (name dev)
+ (synopsis "A short, but powerful statement about your project")
+ (description "A short, but powerful statement about your project")
+ (depends ocaml-lsp-server ocamlformat ocamlformat-rpc utop))
