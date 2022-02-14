@@ -39,5 +39,25 @@ struct
 end
 
 module CalcsFloat = MakeCalcsNumber (Float)
-
 module CalcsInt = MakeCalcsNumber (Int)
+
+module MakeCalcsVector (Vector : Vector.VECTOR) = struct
+  type num = Vector.t [@@deriving sexp]
+
+  type op =
+    [ `Add
+    | `Sub
+    ]
+  [@@deriving sexp]
+
+  let calculate op acc arg =
+    let open Vector.Infix in
+    match op with
+    | `Add -> Some (acc + arg)
+    | `Sub -> Some (acc - arg)
+  ;;
+end
+
+module CalcsVector0 = MakeCalcsVector (Vector.Vector0)
+module CalcsVector1 = MakeCalcsVector (Vector.Vector1)
+module CalcsVector2 = MakeCalcsVector (Vector.Vector2)

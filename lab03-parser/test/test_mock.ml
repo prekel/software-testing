@@ -23,7 +23,7 @@ end
 
 let%test_module "" =
   (module struct
-    module CalcsMock = MakeCalcsMock (CalcsInt)
+    module CalcsMock = MakeHistoryCalcsMock (CalcsInt)
     module MockStateMachine = Calc.MakeStateMachine (CalcsMock)
     open MakePrintAndUpdate (MockStateMachine)
 
@@ -32,7 +32,7 @@ let%test_module "" =
       let final =
         MockStateMachine.initial
         |> print_and_update (MockStateMachine.Action.Num 1)
-        |> print_and_update (MockStateMachine.Action.Op Add)
+        |> print_and_update (MockStateMachine.Action.Op `Add)
         |> print_and_update (MockStateMachine.Action.Num 40)
         |> print_and_update MockStateMachine.Action.Calculate
         |> print_and_update MockStateMachine.Action.Empty
@@ -55,8 +55,8 @@ let%test_module "" =
       let final =
         MockStateMachine.initial
         |> print_and_update (MockStateMachine.Action.Num 1)
-        |> print_and_update (MockStateMachine.Action.Op Add)
-        |> print_and_update (MockStateMachine.Action.Op Add)
+        |> print_and_update (MockStateMachine.Action.Op `Add)
+        |> print_and_update (MockStateMachine.Action.Op `Add)
         |> print_and_update (MockStateMachine.Action.Num 40)
         |> print_and_update MockStateMachine.Action.Calculate
         |> print_and_update MockStateMachine.Action.Empty

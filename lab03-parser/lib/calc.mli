@@ -1,11 +1,8 @@
 open Calcs
 
-module MakeStateMachine (Calcs : Calcs) : sig
-  module C : Calcs
-
 module type S = sig
-  module Calcs : Calcs
-  open Calcs
+  module C : Calcs
+  open C
 
   module State : sig
     type t =
@@ -40,15 +37,10 @@ module type S = sig
   end
 
   val initial : State.t
-<<<<<<< HEAD
   val result : State.t -> num option
   val update : action:Action.t -> State.t -> State.t
 end
 
 module MakeStateMachine (Calcs : Calcs) : sig
-  include S with module Calcs = Calcs
-=======
-  val result : State.t -> Calcs.num option
-  val update : action:Action.t -> State.t -> State.t
->>>>>>> mockparser
+  include S with module C = Calcs
 end

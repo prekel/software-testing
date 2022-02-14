@@ -1,17 +1,10 @@
 open Calcs
 
-  val calculate : op -> num -> num -> num option
-end
-
 module type S = sig
-  module Calcs : Calcs 
-  open Calcs
-  module State : sig
-module MakeStateMachine (Calcs : Calcs) = struct
-  open Calcs
-  module C = Calcs
+  module C : Calcs
+  open C
 
-  module State = struct
+  module State : sig
     type t =
       | WaitInitial
       | WaitOperation of { acc : num }
@@ -49,8 +42,8 @@ module MakeStateMachine (Calcs : Calcs) = struct
 end
 
 module MakeStateMachine (Calcs : Calcs) = struct
-  module Calcs = Calcs
-  open Calcs
+  module C = Calcs
+  open C
 
   module State = struct
     type t =

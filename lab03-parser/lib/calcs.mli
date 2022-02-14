@@ -1,13 +1,7 @@
 module type Calcs = sig
-  type num
+  type num [@@deriving sexp]
+  type op [@@deriving sexp]
 
-  val sexp_of_num : num -> Ppx_sexp_conv_lib.Sexp.t
-  val num_of_sexp : Ppx_sexp_conv_lib.Sexp.t -> num
-
-  type op
-
-  val sexp_of_op : op -> Ppx_sexp_conv_lib.Sexp.t
-  val op_of_sexp : Ppx_sexp_conv_lib.Sexp.t -> op
   val calculate : op -> num -> num -> num option
 end
 
@@ -51,5 +45,45 @@ module CalcsInt : sig
         | `Sub
         | `Mult
         | `Div
+        ]
+end
+
+module MakeCalcsVector (Vector : Vector.VECTOR) : sig
+  include
+    Calcs
+      with type num = Vector.t
+       and type op =
+        [ `Add
+        | `Sub
+        ]
+end
+
+module CalcsVector0 : sig
+  include
+    Calcs
+      with type num = Vector.Vector0.t
+       and type op =
+        [ `Add
+        | `Sub
+        ]
+end
+
+module CalcsVector1 : sig
+  include
+    Calcs
+      with type num = Vector.Vector1.t
+       and type op =
+        [ `Add
+        | `Sub
+        ]
+end
+
+module CalcsVector2 : sig
+  include
+    Calcs
+      with type num = Vector.Vector2.t
+       and type op =
+        [ `Add
+        | `Sub
         ]
 end
