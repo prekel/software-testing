@@ -6,6 +6,8 @@ module type Calcs = sig
 end
 
 module StateMachine (Calcs : Calcs) : sig
+  module C : Calcs
+
   module State : sig
     type t =
       | WaitInitial

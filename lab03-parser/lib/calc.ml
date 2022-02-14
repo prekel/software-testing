@@ -7,6 +7,7 @@ end
 
 module StateMachine (Calcs : Calcs) = struct
   open Calcs
+  module C = Calcs
 
   module State = struct
     type t =
