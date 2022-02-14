@@ -7,6 +7,7 @@ end
 
 module StateMachine (Calcs : Calcs) = struct
   open Calcs
+
   module State = struct
     type t =
       | WaitInitial
@@ -43,6 +44,13 @@ module StateMachine (Calcs : Calcs) = struct
       | Reset
     [@@deriving sexp]
   end
+
+  let initial = State.WaitInitial
+
+  let result = function
+    | State.Finish result -> Some result
+    | _ -> None
+  ;;
 
   let update state action =
     let open State in

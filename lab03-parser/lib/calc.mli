@@ -43,5 +43,7 @@ module StateMachine (Calcs : Calcs) : sig
     [@@deriving sexp]
   end
 
+  val initial : State.t
+  val result : State.t -> Calcs.num option
   val update : State.t -> Action.t -> State.t
 end
