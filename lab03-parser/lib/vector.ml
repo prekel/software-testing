@@ -131,7 +131,7 @@ module Vector1 = struct
 end
 
 module Vector2 = struct
-  include VS (Vector1 )
+  include VS (Vector1)
 
   let make a b = of_vec a (Vector1.make b)
 
