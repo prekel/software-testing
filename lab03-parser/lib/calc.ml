@@ -1,11 +1,6 @@
-module type Calcs = sig
-  type num [@@deriving sexp]
-  type op [@@deriving sexp]
+open Calcs
 
-  val calculate : op -> num -> num -> num option
-end
-
-module StateMachine (Calcs : Calcs) = struct
+module MakeStateMachine (Calcs : Calcs) = struct
   open Calcs
   module C = Calcs
 
@@ -53,7 +48,7 @@ module StateMachine (Calcs : Calcs) = struct
     | _ -> None
   ;;
 
-  let update state action =
+  let update ~action state =
     let open State in
     let open Action in
     match state, action with

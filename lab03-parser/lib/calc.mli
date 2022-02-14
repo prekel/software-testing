@@ -1,11 +1,6 @@
-module type Calcs = sig
-  type num [@@deriving sexp]
-  type op [@@deriving sexp]
+open Calcs
 
-  val calculate : op -> num -> num -> num option
-end
-
-module StateMachine (Calcs : Calcs) : sig
+module MakeStateMachine (Calcs : Calcs) : sig
   module C : Calcs
 
   module State : sig
@@ -47,5 +42,5 @@ module StateMachine (Calcs : Calcs) : sig
 
   val initial : State.t
   val result : State.t -> Calcs.num option
-  val update : State.t -> Action.t -> State.t
+  val update : action:Action.t -> State.t -> State.t
 end

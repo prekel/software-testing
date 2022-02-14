@@ -1,26 +1,9 @@
 open Core
 module V0 = Lab03_parser.Vector.Vector0
+open Lab03_parser
+open Calcs
 
-module CalcsInt = struct
-  type num = int [@@deriving sexp]
-
-  type op =
-    | Add
-    | Sub
-    | Mult
-    | Div
-  [@@deriving sexp]
-
-  let calculate op acc arg =
-    match op with
-    | Add -> Some (acc + arg)
-    | Sub -> Some (acc - arg)
-    | Mult -> Some (acc * arg)
-    | Div -> if arg = 0 then None else Some (acc / arg)
-  ;;
-end
-
-module MakeCalcsMock (Calcs : Lab03_parser.Calc.Calcs) = struct
+module MakeHistoryCalcsMock (Calcs : Calcs) = struct
   include Calcs
 
   let history = Stack.create ()
@@ -31,59 +14,68 @@ module MakeCalcsMock (Calcs : Lab03_parser.Calc.Calcs) = struct
   ;;
 end
 
-module CalcsMock = MakeCalcsMock (CalcsInt)
-module MockStateMachine = Lab03_parser.Calc.StateMachine (CalcsMock)
+module MakePrintAndUpdate
+    (Calcs : Calcs)
+    (CalcStateMachine : module type of Calc.MakeStateMachine (Calcs)) =
+    struct
+  let print_and_update action state =
+    print_s [%sexp (state : CalcStateMachine.State.t)];
+    CalcStateMachine.update ~action state
+  ;;
+end
 
-let update_and_print action state =
-  print_s [%sexp (state : MockStateMachine.State.t)];
-  let new_state = MockStateMachine.update state action in
-  new_state
-;;
+let%test_module "" =
+  (module struct
+    module CalcsMock = MakeHistoryCalcsMock (CalcsInt)
+    module MockStateMachine = Lab03_parser.Calc.MakeStateMachine (CalcsMock)
+    open MakePrintAndUpdate (CalcsMock) (MockStateMachine)
 
-let%expect_test "test1" =
-  Stack.clear CalcsMock.history;
-  let final =
-    MockStateMachine.initial
-    |> update_and_print (MockStateMachine.Action.Num 1)
-    |> update_and_print (MockStateMachine.Action.Op Add)
-    |> update_and_print (MockStateMachine.Action.Num 40)
-    |> update_and_print MockStateMachine.Action.Calculate
-    |> update_and_print MockStateMachine.Action.Empty
-  in
-  [%expect
-    {|
+    let%expect_test "test1" =
+      Stack.clear CalcsMock.history;
+      let final =
+        MockStateMachine.initial
+        |> print_and_update (MockStateMachine.Action.Num 1)
+        |> print_and_update (MockStateMachine.Action.Op Add)
+        |> print_and_update (MockStateMachine.Action.Num 40)
+        |> print_and_update MockStateMachine.Action.Calculate
+        |> print_and_update MockStateMachine.Action.Empty
+      in
+      [%expect
+        {|
     WaitInitial
     (WaitOperation (acc 1) (acc' 1))
     (WaitArgument (acc 1) (acc' 1) (op Add))
     (Calculation (acc 1) (acc' 1) (op Add) (arg 40))
     (WaitOperation (acc 41) (acc' 1)) |}];
-  print_s [%sexp (final : MockStateMachine.State.t)];
-  [%expect {| (Finish 41) |}];
-  print_s [%sexp (CalcsMock.history : (CalcsInt.op * int * int) Stack.t)];
-  [%expect {| ((Add 1 40)) |}]
-;;
+      print_s [%sexp (final : MockStateMachine.State.t)];
+      [%expect {| (Finish 41) |}];
+      print_s [%sexp (CalcsMock.history : (CalcsInt.op * int * int) Stack.t)];
+      [%expect {| ((Add 1 40)) |}]
+    ;;
 
-let%expect_test "test1" =
-  Stack.clear CalcsMock.history;
-  let final =
-    MockStateMachine.initial
-    |> update_and_print (MockStateMachine.Action.Num 1)
-    |> update_and_print (MockStateMachine.Action.Op Add)
-    |> update_and_print (MockStateMachine.Action.Op Add)
-    |> update_and_print (MockStateMachine.Action.Num 40)
-    |> update_and_print MockStateMachine.Action.Calculate
-    |> update_and_print MockStateMachine.Action.Empty
-  in
-  [%expect
-    {|
+    let%expect_test "test1" =
+      Stack.clear CalcsMock.history;
+      let final =
+        MockStateMachine.initial
+        |> print_and_update (MockStateMachine.Action.Num 1)
+        |> print_and_update (MockStateMachine.Action.Op Add)
+        |> print_and_update (MockStateMachine.Action.Op Add)
+        |> print_and_update (MockStateMachine.Action.Num 40)
+        |> print_and_update MockStateMachine.Action.Calculate
+        |> print_and_update MockStateMachine.Action.Empty
+      in
+      [%expect
+        {|
     WaitInitial
     (WaitOperation (acc 1) (acc' 1))
     (WaitArgument (acc 1) (acc' 1) (op Add))
     (ErrorState (WaitArgument (acc 1) (acc' 1) (op Add)))
     (ErrorState (WaitArgument (acc 1) (acc' 1) (op Add)))
     (ErrorState (WaitArgument (acc 1) (acc' 1) (op Add))) |}];
-  print_s [%sexp (final : MockStateMachine.State.t)];
-  [%expect {| (ErrorState (WaitArgument (acc 1) (acc' 1) (op Add))) |}];
-  print_s [%sexp (CalcsMock.history : (CalcsInt.op * int * int) Stack.t)];
-  [%expect {| () |}]
+      print_s [%sexp (final : MockStateMachine.State.t)];
+      [%expect {| (ErrorState (WaitArgument (acc 1) (acc' 1) (op Add))) |}];
+      print_s [%sexp (CalcsMock.history : (CalcsInt.op * int * int) Stack.t)];
+      [%expect {| () |}]
+    ;;
+  end)
 ;;
