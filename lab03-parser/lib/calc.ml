@@ -6,7 +6,7 @@ module type Calcs = sig
 end
 
 module type S = sig
-  module Calcs : Calcs
+  module Calcs : Calcs 
   open Calcs
   module State : sig
     type t =
