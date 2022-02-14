@@ -1,27 +1,9 @@
 open Core
 module V0 = Lab03_parser.Vector.Vector0
 open Lab03_parser
+open Calcs
 
-module CalcsInt = struct
-  type num = int [@@deriving sexp]
-
-  type op =
-    | Add
-    | Sub
-    | Mult
-    | Div
-  [@@deriving sexp]
-
-  let calculate op acc arg =
-    match op with
-    | Add -> Some (acc + arg)
-    | Sub -> Some (acc - arg)
-    | Mult -> Some (acc * arg)
-    | Div -> if arg = 0 then None else Some (acc / arg)
-  ;;
-end
-
-module MakeCalcsMock (Calcs : Lab03_parser.Calc.Calcs) = struct
+module MakeHistoryCalcsMock (Calcs : Calcs) = struct
   include Calcs
 
   let history = Stack.create ()
