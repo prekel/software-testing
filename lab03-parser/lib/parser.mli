@@ -11,14 +11,10 @@ type token =
   | Empty
   | OneNumber of float
   | TwoNumbers of float * float
-  | Back 
-  | Reset 
-  | Calculate 
+  | Back
+  | Reset
+  | Calculate
 [@@deriving sexp]
 
-module type S = sig
-  (** [process_line str] returns parsed token *)
-  val process_line : string -> (token, error) result
-end
-
-module Parser : S
+(** [process_line str] returns parsed token *)
+val process_line : string -> (token, error) result

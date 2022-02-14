@@ -16,12 +16,7 @@ type token =
   | Calculate 
 [@@deriving sexp]
 
-module type S = sig
-  (** [process_line str] returns parsed token *)
-  val process_line : string -> (token, error) result
-end
 
-module Parser : S = struct
   let process_line line =
     let without_parens =
       Option.Let_syntax.(
@@ -53,4 +48,3 @@ module Parser : S = struct
       end
     | None -> Error NoParens
   ;;
-end

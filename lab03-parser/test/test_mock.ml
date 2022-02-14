@@ -1,5 +1,5 @@
 open Core
-module V0 = Lab03_parser.Vector.Vector0 (Parser_mock)
+module V0 = Lab03_parser.Vector.Vector0
 
 let%expect_test "vec" =
   let a = V0.parse "123" |> Option.value_exn in

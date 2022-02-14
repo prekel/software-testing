@@ -5,50 +5,44 @@ module type Calcs = sig
   val calculate : op -> num -> num -> num option
 end
 
-module MakeStates (Calcs : Calcs) = struct
-  open Calcs
-
-  type t =
-    | WaitInitial
-    | WaitOperation of
-        { acc : num
-        ; acc' : num
-        }
-    | WaitArgument of
-        { acc : num
-        ; acc' : num
-        ; op : op
-        }
-    | Calculation of
-        { acc : num
-        ; acc' : num
-        ; op : op
-        ; arg : num
-        }
-    | ErrorState of t
-    | ErrorInput of t
-    | ErrorOperation of t
-    | Finish of num
-  [@@deriving sexp]
-end
-
-module MakeActions (Calcs : Calcs) = struct
-  open Calcs
-
-  type t =
-    | Num of num
-    | Op of op
-    | Empty
-    | Invalid
-    | Calculate
-    | Back
-    | Reset
-  [@@deriving sexp]
-end
-
 module StateMachine (Calcs : Calcs) = struct
-  module State = MakeStates (Calcs)
-  module Action = MakeActions (Calcs)
+  open Calcs
+  module State = struct
+    type t =
+      | WaitInitial
+      | WaitOperation of
+          { acc : num
+          ; acc' : num
+          }
+      | WaitArgument of
+          { acc : num
+          ; acc' : num
+          ; op : op
+          }
+      | Calculation of
+          { acc : num
+          ; acc' : num
+          ; op : op
+          ; arg : num
+          }
+      | ErrorState of t
+      | ErrorInput of t
+      | ErrorOperation of t
+      | Finish of num
+    [@@deriving sexp]
+  end
+
+  module Action = struct
+    type t =
+      | Num of num
+      | Op of op
+      | Empty
+      | Invalid
+      | Calculate
+      | Back
+      | Reset
+    [@@deriving sexp]
+  end
 
   let update state action =
     let open State in

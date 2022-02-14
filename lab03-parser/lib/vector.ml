@@ -106,7 +106,7 @@ module VS (V : VEC) = struct
   module Infix = MakeVecInfix (T)
 end
 
-module Vector0 (Parser : Parser.S) = struct
+module Vector0 = struct
   include VZ
 
   let make = VZ.zero
@@ -118,8 +118,7 @@ module Vector0 (Parser : Parser.S) = struct
   ;;
 end
 
-module Vector1 (Parser : Parser.S) = struct
-  module Vector0 = Vector0 (Parser)
+module Vector1 = struct
   include VS (Vector0)
 
   let make a = of_vec a Vector0.make
@@ -131,8 +130,7 @@ module Vector1 (Parser : Parser.S) = struct
   ;;
 end
 
-module Vector2 (Parser : Parser.S) = struct
-  module Vector1 = Vector1 (Parser)
+module Vector2 = struct
   include VS (Vector1 )
 
   let make a b = of_vec a (Vector1.make b)

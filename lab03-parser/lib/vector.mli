@@ -71,7 +71,7 @@ module type VECTOR = sig
 end
 
 (** Degenerate vector (0 dimension) *)
-module Vector0 (Parser: Parser.S) : sig
+module Vector0 : sig
   include VECTOR
 
   (** [make] is single instance of 0-dimension degenerate vector *)
@@ -79,7 +79,7 @@ module Vector0 (Parser: Parser.S) : sig
 end
 
 (** 1-dimension vector*)
-module Vector1 (Parser: Parser.S) : sig
+module Vector1 : sig
   include VECTOR
 
   (** [make x1] is 1-dimension vector with length [x1] *)
@@ -87,7 +87,7 @@ module Vector1 (Parser: Parser.S) : sig
 end
 
 (** 2-dimension vector *)
-module Vector2 (Parser: Parser.S) : sig
+module Vector2 : sig
   include VECTOR
 
   (** [make x1 x2] is 2-dimension vector with coords [x1] and [x2] *)

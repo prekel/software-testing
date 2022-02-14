@@ -15,14 +15,11 @@ module MakeCalcsVector (Vector : Vector.VECTOR) : Calc.Calcs = struct
   ;;
 end
 
-module MakeCalcsVector0 (Parser : Parser.S) = MakeCalcsVector (Vector.Vector0 (Parser))
-module MakeCalcsVector1 (Parser : Parser.S) = MakeCalcsVector (Vector.Vector1 (Parser))
-module MakeCalcsVector2 (Parser : Parser.S) = MakeCalcsVector (Vector.Vector2 (Parser))
+module MakeCalcsVector0 = MakeCalcsVector (Vector.Vector0)
+module MakeCalcsVector1 = MakeCalcsVector (Vector.Vector1)
+module MakeCalcsVector2 = MakeCalcsVector (Vector.Vector2)
 
-module Make
-    (Parser : Parser.S)
-    (Vector : Vector.VECTOR)
-    (Calcs : Calc.Calcs with type num = Vector.t) =
+module Make (Vector : Vector.VECTOR) (Calcs : Calc.Calcs with type num = Vector.t) =
 struct
   module StateMachine = Calc.StateMachine (Calcs)
 
@@ -38,5 +35,5 @@ struct
       | _ -> StateMachine.Action.Back)
   ;;
 
-  let update state line = ()
+  let update _state _line = ()
 end
