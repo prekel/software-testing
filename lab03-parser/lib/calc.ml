@@ -5,24 +5,60 @@ module type Calcs = sig
   val calculate : op -> num -> num -> num option
 end
 
-module StateMachine (Calcs : Calcs) = struct
+module type S = sig
+  module Calcs : Calcs
+  open Calcs
+  module State : sig
+    type t =
+      | WaitInitial
+      | WaitOperation of { acc : num }
+      | WaitArgument of
+          { acc : num
+          ; op : op
+          }
+      | Calculation of
+          { acc : num
+          ; op : op
+          ; arg : num
+          }
+      | ErrorState of t
+      | ErrorInput of t
+      | ErrorOperation of t
+      | Finish of num
+    [@@deriving sexp]
+  end
+
+  module Action : sig
+    type t =
+      | Num of num
+      | Op of op
+      | Empty
+      | Invalid
+      | Calculate
+      | Back
+      | Reset
+    [@@deriving sexp]
+  end
+
+  val initial : State.t
+  val result : State.t -> num option
+  val update : action:Action.t -> State.t -> State.t
+end
+
+module MakeStateMachine (Calcs : Calcs) = struct
+  module Calcs = Calcs
   open Calcs
 
   module State = struct
     type t =
       | WaitInitial
-      | WaitOperation of
-          { acc : num
-          ; acc' : num
-          }
+      | WaitOperation of { acc : num }
       | WaitArgument of
           { acc : num
-          ; acc' : num
           ; op : op
           }
       | Calculation of
           { acc : num
-          ; acc' : num
           ; op : op
           ; arg : num
           }
@@ -52,27 +88,27 @@ module StateMachine (Calcs : Calcs) = struct
     | _ -> None
   ;;
 
-  let update state action =
+  let update ~action state =
     let open State in
     let open Action in
     match state, action with
     | _, Reset -> WaitInitial
     | _, Invalid -> ErrorInput state
-    | WaitInitial, Num a -> WaitOperation { acc = a; acc' = a }
+    | WaitInitial, Num a -> WaitOperation { acc = a }
     | WaitInitial, (Op _ | Empty | Calculate) -> ErrorState state
     | WaitInitial, Back -> WaitInitial
     | WaitOperation _, (Num _ | Calculate) -> ErrorState state
-    | WaitOperation { acc; acc' }, Op op -> WaitArgument { acc; acc'; op }
+    | WaitOperation { acc }, Op op -> WaitArgument { acc; op }
     | WaitOperation { acc; _ }, Empty -> Finish acc
     | WaitOperation _, Back -> WaitInitial
-    | WaitArgument { acc; acc'; op }, Num arg -> Calculation { acc; acc'; op; arg }
+    | WaitArgument { acc; op }, Num arg -> Calculation { acc; op; arg }
     | WaitArgument _, (Op _ | Empty | Calculate) -> ErrorState state
-    | WaitArgument { acc; acc'; _ }, Back -> WaitOperation { acc; acc' }
+    | WaitArgument { acc; _ }, Back -> WaitOperation { acc }
     | Calculation _, (Empty | Num _ | Op _) -> ErrorState state
-    | Calculation { acc; acc'; op; _ }, Back -> WaitArgument { acc; acc'; op }
-    | Calculation { acc; acc'; op; arg }, Calculate ->
+    | Calculation { acc; op; _ }, Back -> WaitArgument { acc; op }
+    | Calculation { acc; op; arg }, Calculate ->
       (match Calcs.calculate op acc arg with
-      | Some acc -> WaitOperation { acc; acc' }
+      | Some acc -> WaitOperation { acc }
       | None -> ErrorOperation state)
     | (ErrorState old_state | ErrorInput old_state | ErrorOperation old_state), Back ->
       old_state

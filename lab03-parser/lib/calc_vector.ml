@@ -1,4 +1,4 @@
-module MakeCalcsVector (Vector : Vector.VECTOR) : Calc.Calcs = struct
+(* module MakeCalcsVector (Vector : Vector.VECTOR) : Calc.Calcs = struct
   module V = Vector
 
   type num = V.t [@@deriving sexp]
@@ -36,4 +36,4 @@ struct
   ;;
 
   let update _state _line = ()
-end
+end *)
