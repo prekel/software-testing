@@ -1,46 +1,39 @@
-open Calcs
-
 module type S = sig
-  module C : Calcs
-  open C
+  module C : Calcs.Calcs
 
-  module State : sig
-    type t =
-      | WaitInitial
-      | WaitOperation of { acc : num }
-      | WaitArgument of
-          { acc : num
-          ; op : op
-          }
-      | Calculation of
-          { acc : num
-          ; op : op
-          ; arg : num
-          }
-      | ErrorState of t
-      | ErrorInput of t
-      | ErrorOperation of t
-      | Finish of num
-    [@@deriving sexp]
-  end
+  type state =
+    | WaitInitial
+    | WaitOperation of { acc : C.num }
+    | WaitArgument of
+        { acc : C.num
+        ; op : C.op
+        }
+    | Calculation of
+        { acc : C.num
+        ; op : C.op
+        ; arg : C.num
+        }
+    | ErrorState of state
+    | ErrorInput of state
+    | ErrorOperation of state
+    | Finish of C.num
+  [@@deriving sexp]
 
-  module Action : sig
-    type t =
-      | Num of num
-      | Op of op
-      | Empty
-      | Invalid
-      | Calculate
-      | Back
-      | Reset
-    [@@deriving sexp]
-  end
+  type action =
+    | Num of C.num
+    | Op of C.op
+    | Empty
+    | Invalid
+    | Calculate
+    | Back
+    | Reset
+  [@@deriving sexp]
 
-  val initial : State.t
-  val result : State.t -> num option
-  val update : action:Action.t -> State.t -> State.t
+  val initial : state
+  val result : state -> C.num option
+  val update : action:action -> state -> state
 end
 
-module MakeStateMachine (Calcs : Calcs) : sig
+module MakeStateMachine (Calcs : Calcs.Calcs) : sig
   include S with module C = Calcs
 end

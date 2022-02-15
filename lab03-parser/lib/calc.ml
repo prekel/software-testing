@@ -4,89 +4,79 @@ module type S = sig
   module C : Calcs
   open C
 
-  module State : sig
-    type t =
-      | WaitInitial
-      | WaitOperation of { acc : num }
-      | WaitArgument of
-          { acc : num
-          ; op : op
-          }
-      | Calculation of
-          { acc : num
-          ; op : op
-          ; arg : num
-          }
-      | ErrorState of t
-      | ErrorInput of t
-      | ErrorOperation of t
-      | Finish of num
-    [@@deriving sexp]
-  end
+  type state =
+    | WaitInitial
+    | WaitOperation of { acc : num }
+    | WaitArgument of
+        { acc : num
+        ; op : op
+        }
+    | Calculation of
+        { acc : num
+        ; op : op
+        ; arg : num
+        }
+    | ErrorState of state
+    | ErrorInput of state
+    | ErrorOperation of state
+    | Finish of num
+  [@@deriving sexp]
 
-  module Action : sig
-    type t =
-      | Num of num
-      | Op of op
-      | Empty
-      | Invalid
-      | Calculate
-      | Back
-      | Reset
-    [@@deriving sexp]
-  end
+  type action =
+    | Num of num
+    | Op of op
+    | Empty
+    | Invalid
+    | Calculate
+    | Back
+    | Reset
+  [@@deriving sexp]
 
-  val initial : State.t
-  val result : State.t -> num option
-  val update : action:Action.t -> State.t -> State.t
+  val initial : state
+  val result : state -> num option
+  val update : action:action -> state -> state
 end
 
 module MakeStateMachine (Calcs : Calcs) = struct
   module C = Calcs
   open C
 
-  module State = struct
-    type t =
-      | WaitInitial
-      | WaitOperation of { acc : num }
-      | WaitArgument of
-          { acc : num
-          ; op : op
-          }
-      | Calculation of
-          { acc : num
-          ; op : op
-          ; arg : num
-          }
-      | ErrorState of t
-      | ErrorInput of t
-      | ErrorOperation of t
-      | Finish of num
-    [@@deriving sexp]
-  end
+  type state =
+    | WaitInitial
+    | WaitOperation of { acc : num }
+    | WaitArgument of
+        { acc : num
+        ; op : op
+        }
+    | Calculation of
+        { acc : num
+        ; op : op
+        ; arg : num
+        }
+    | ErrorState of state
+    | ErrorInput of state
+    | ErrorOperation of state
+    | Finish of num
+  [@@deriving sexp]
 
-  module Action = struct
-    type t =
-      | Num of num
-      | Op of op
-      | Empty
-      | Invalid
-      | Calculate
-      | Back
-      | Reset
-    [@@deriving sexp]
-  end
+  type action =
+    | Num of num
+    | Op of op
+    | Empty
+    | Invalid
+    | Calculate
+    | Back
+    | Reset
+  [@@deriving sexp]
 
-  let initial = State.WaitInitial
+  let initial = WaitInitial
 
   let result = function
-    | State.Finish result -> Some result
+    | Finish result -> Some result
     | _ -> None
   ;;
 
   let update ~action state =
-    let open State in
-    let open Action in
     match state, action with
     | _, Reset -> WaitInitial
     | _, Invalid -> ErrorInput state

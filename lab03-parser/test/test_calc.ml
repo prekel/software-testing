@@ -15,7 +15,7 @@ end
 
 module MakePrintAndUpdate (CalcStateMachine : Calc.S) = struct
   let print_and_update action state =
-    print_s [%sexp (state : CalcStateMachine.State.t)];
+    print_s [%sexp (state : CalcStateMachine.state)];
     CalcStateMachine.update ~action state
   ;;
 end
@@ -30,19 +30,20 @@ let%test_module "" =
       Stack.clear CalcsMock.history;
       let final =
         MockStateMachine.initial
-        |> print_and_update (MockStateMachine.Action.Num 1)
-        |> print_and_update (MockStateMachine.Action.Op `Add)
-        |> print_and_update (MockStateMachine.Action.Num 40)
-        |> print_and_update MockStateMachine.Action.Calculate
-        |> print_and_update MockStateMachine.Action.Empty
+        |> print_and_update (MockStateMachine.Num 1)
+        |> print_and_update (MockStateMachine.Op `Add)
+        |> print_and_update (MockStateMachine.Num 40)
+        |> print_and_update MockStateMachine.Calculate
+        |> print_and_update MockStateMachine.Empty
       in
-      [%expect {|
+      [%expect
+        {|
         WaitInitial
         (WaitOperation (acc 1))
         (WaitArgument (acc 1) (op Add))
         (Calculation (acc 1) (op Add) (arg 40))
         (WaitOperation (acc 41)) |}];
-      print_s [%sexp (final : MockStateMachine.State.t)];
+      print_s [%sexp (final : MockStateMachine.state)];
       [%expect {| (Finish 41) |}];
       print_s [%sexp (MockStateMachine.result final : int option)];
       [%expect {| (41) |}];
@@ -54,21 +55,22 @@ let%test_module "" =
       Stack.clear CalcsMock.history;
       let final =
         MockStateMachine.initial
-        |> print_and_update (MockStateMachine.Action.Num 1)
-        |> print_and_update (MockStateMachine.Action.Op `Add)
-        |> print_and_update (MockStateMachine.Action.Op `Add)
-        |> print_and_update (MockStateMachine.Action.Num 40)
-        |> print_and_update MockStateMachine.Action.Calculate
-        |> print_and_update MockStateMachine.Action.Empty
+        |> print_and_update (MockStateMachine.Num 1)
+        |> print_and_update (MockStateMachine.Op `Add)
+        |> print_and_update (MockStateMachine.Op `Add)
+        |> print_and_update (MockStateMachine.Num 40)
+        |> print_and_update MockStateMachine.Calculate
+        |> print_and_update MockStateMachine.Empty
       in
-      [%expect {|
+      [%expect
+        {|
         WaitInitial
         (WaitOperation (acc 1))
         (WaitArgument (acc 1) (op Add))
         (ErrorState (WaitArgument (acc 1) (op Add)))
         (ErrorState (WaitArgument (acc 1) (op Add)))
         (ErrorState (WaitArgument (acc 1) (op Add))) |}];
-      print_s [%sexp (final : MockStateMachine.State.t)];
+      print_s [%sexp (final : MockStateMachine.state)];
       [%expect {| (ErrorState (WaitArgument (acc 1) (op Add))) |}];
       print_s [%sexp (MockStateMachine.result final : int option)];
       [%expect {| () |}];
@@ -80,19 +82,20 @@ let%test_module "" =
       Stack.clear CalcsMock.history;
       let final =
         MockStateMachine.initial
-        |> print_and_update (MockStateMachine.Action.Num 2)
-        |> print_and_update (MockStateMachine.Action.Op `Mult)
-        |> print_and_update (MockStateMachine.Action.Num (-40))
-        |> print_and_update MockStateMachine.Action.Calculate
-        |> print_and_update MockStateMachine.Action.Empty
+        |> print_and_update (MockStateMachine.Num 2)
+        |> print_and_update (MockStateMachine.Op `Mult)
+        |> print_and_update (MockStateMachine.Num (-40))
+        |> print_and_update MockStateMachine.Calculate
+        |> print_and_update MockStateMachine.Empty
       in
-      [%expect {|
+      [%expect
+        {|
         WaitInitial
         (WaitOperation (acc 2))
         (WaitArgument (acc 2) (op Mult))
         (Calculation (acc 2) (op Mult) (arg -40))
         (WaitOperation (acc -80)) |}];
-      print_s [%sexp (final : MockStateMachine.State.t)];
+      print_s [%sexp (final : MockStateMachine.state)];
       [%expect {| (Finish -80) |}];
       print_s [%sexp (MockStateMachine.result final : int option)];
       [%expect {| (-80) |}];
