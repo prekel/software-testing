@@ -1,8 +1,8 @@
 open Calcs
 
 module type S = sig
-  module C : Calcs
-  open C
+  type num [@@deriving sexp]
+  type op [@@deriving sexp]
 
   type state =
     | WaitInitial
@@ -38,8 +38,8 @@ module type S = sig
 end
 
 module MakeStateMachine (Calcs : Calcs) = struct
-  module C = Calcs
-  open C
+  type num = Calcs.num [@@deriving sexp]
+  type op = Calcs.op [@@deriving sexp]
 
   type state =
     | WaitInitial

@@ -1,27 +1,28 @@
 module type S = sig
-  module C : Calcs.Calcs
+  type num [@@deriving sexp]
+  type op [@@deriving sexp]
 
   type state =
     | WaitInitial
-    | WaitOperation of { acc : C.num }
+    | WaitOperation of { acc : num }
     | WaitArgument of
-        { acc : C.num
-        ; op : C.op
+        { acc : num
+        ; op : op
         }
     | Calculation of
-        { acc : C.num
-        ; op : C.op
-        ; arg : C.num
+        { acc : num
+        ; op : op
+        ; arg : num
         }
     | ErrorState of state
     | ErrorInput of state
     | ErrorOperation of state
-    | Finish of C.num
+    | Finish of num
   [@@deriving sexp]
 
   type action =
-    | Num of C.num
-    | Op of C.op
+    | Num of num
+    | Op of op
     | Empty
     | Invalid
     | Calculate
@@ -30,10 +31,10 @@ module type S = sig
   [@@deriving sexp]
 
   val initial : state
-  val result : state -> C.num option
+  val result : state -> num option
   val update : action:action -> state -> state
 end
 
 module MakeStateMachine (Calcs : Calcs.Calcs) : sig
-  include S with module C = Calcs
+  include S with type num = Calcs.num and type op = Calcs.op
 end

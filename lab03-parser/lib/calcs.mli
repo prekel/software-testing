@@ -24,29 +24,8 @@ end) : sig
         ]
 end
 
-module CalcsFloat : sig
-  include
-    Calcs
-      with type num = float
-       and type op =
-        [ `Add
-        | `Sub
-        | `Mult
-        | `Div
-        ]
-end
-
-module CalcsInt : sig
-  include
-    Calcs
-      with type num = int
-       and type op =
-        [ `Add
-        | `Sub
-        | `Mult
-        | `Div
-        ]
-end
+module CalcsFloat : module type of MakeCalcsNumber (Core.Float)
+module CalcsInt : module type of MakeCalcsNumber (Core.Int)
 
 module MakeCalcsVector (Vector : Vector.VECTOR) : sig
   include
@@ -58,32 +37,6 @@ module MakeCalcsVector (Vector : Vector.VECTOR) : sig
         ]
 end
 
-module CalcsVector0 : sig
-  include
-    Calcs
-      with type num = Vector.Vector0.t
-       and type op =
-        [ `Add
-        | `Sub
-        ]
-end
-
-module CalcsVector1 : sig
-  include
-    Calcs
-      with type num = Vector.Vector1.t
-       and type op =
-        [ `Add
-        | `Sub
-        ]
-end
-
-module CalcsVector2 : sig
-  include
-    Calcs
-      with type num = Vector.Vector2.t
-       and type op =
-        [ `Add
-        | `Sub
-        ]
-end
+module CalcsVector0 : module type of MakeCalcsVector (Vector.Vector0)
+module CalcsVector1 : module type of MakeCalcsVector (Vector.Vector1)
+module CalcsVector2 : module type of MakeCalcsVector (Vector.Vector2)
