@@ -23,7 +23,31 @@ struct
       loop state
   ;;
 
+  open Lwt
+
+  let rec loop' state =
+    let open Lwt.Let_syntax in
+    let%bind () = Lwt_io.printl (Sexp.to_string [%sexp (state : M.state)]) in
+    match%bind Lwt_io.read_line Lwt_io.stdin >|= Parser.process_line with
+    | Ok token ->
+      let action = M.token_to_action token in
+      begin
+        match action with
+        | Ok action -> M.update ~action state |> loop'
+        | Error `Quit -> return (M.result state)
+        | Error `WrongToken -> loop' state
+      end
+    | Error parse_error ->
+      let%bind () =
+        Lwt_io.printl
+          (Sexp.to_string
+             [%message "Parse error" ~parse_error:(parse_error : Parser.error)])
+      in
+      loop' state
+  ;;
+
   let run () = loop M.WaitInitial
+  let run' () = loop' M.WaitInitial
 end
 
 module MakeCalculatorS (M : sig
@@ -33,6 +57,7 @@ struct
   type _t = M.t
 
   let run = assert false
+  let run' = assert false
 end
 
 module CalculatorFloat = MakeCalculator (struct

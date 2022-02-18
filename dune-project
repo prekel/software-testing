@@ -22,10 +22,7 @@
   (lwt :build)
   (ppx_jane :build)
   (bisect_ppx :with-test)
-  (ocaml-lsp-server
-   (and
-    :with-test
-    (= 1.9.1)))
+  (ocaml-lsp-server :with-test)
   (ocamlformat :with-test)
   (ocamlformat-rpc :with-test)
   (utop :with-test)

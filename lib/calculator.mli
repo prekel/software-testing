@@ -4,12 +4,14 @@ module MakeCalculator (M : sig
   val token_to_action : Parser.token -> (action, [ `Quit | `WrongToken ]) result
 end) : sig
   val run : unit -> M.num option
+  val run' : unit -> M.num option Lwt.t
 end
 
 module MakeCalculatorS (M : sig
   type t
 end) : sig
   val run : unit -> M.t option
+  val run' : unit -> M.t option Lwt.t
 end
 
 module CalculatorFloat : module type of MakeCalculatorS (Float)
