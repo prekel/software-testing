@@ -7,20 +7,6 @@ $(eval $(ARGS):;@:)
 all:
 	opam exec -- dune build --root . @install
 
-.PHONY: deps
-deps: ## Install development dependencies
-	opam install -y dune-release ocamlformat ocamlformat-rpc utop ocaml-lsp-server
-	opam install --deps-only --with-test --with-doc -y .
-
-.PHONY: create_switch
-create_switch: ## Create an opam switch without any dependency
-	opam switch create . --no-install -y
-
-.PHONY: switch
-switch: ## Create an opam switch and install development dependencies
-	opam install . --deps-only --with-doc --with-test
-	opam install -y dune-release ocamlformat ocamlformat-rpc utop ocaml-lsp-server
-
 .PHONY: lock
 lock: ## Generate a lock file
 	opam lock -y .
@@ -72,6 +58,21 @@ release: all ## Run the release script
 	opam exec -- dune-release publish distrib -y
 	opam exec -- dune-release opam pkg
 	opam exec -- dune-release opam submit --no-auto-open -y
+
+
+#######
+
+.PHONY: create_switch
+create_switch: ## Create an opam switch without any dependency
+	opam switch create . 4.13.1 --no-install -y --repos=janestreet-bleeding=https://ocaml.janestreet.com/opam-repository,default
+
+.PHONY: deps_all
+deps_all: ## Install dependencies and development dependencies 
+	opam install --deps-only --with-test --with-doc . -y
+
+.PHONY: deps
+deps: ## Install dependencies
+	opam install --deps-only . -y
 
 .PHONY: coverage
 coverage: ## Run coverage

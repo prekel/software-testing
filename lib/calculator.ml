@@ -6,24 +6,24 @@ module MakeCalculator (M : sig
   val token_to_action : Parser.token -> (action, [ `Quit | `WrongToken ]) result
 end) =
 struct
-  let rec cycle state =
+  let rec loop state =
     Out_channel.(print_s [%sexp (state : M.state)]);
     match Stdio.In_channel.(input_line_exn stdin) |> Parser.process_line with
     | Ok token ->
       let action = M.token_to_action token in
       begin
         match action with
-        | Ok action -> M.update ~action state |> cycle
+        | Ok action -> M.update ~action state |> loop
         | Error `Quit -> M.result state
-        | Error `WrongToken -> cycle state
+        | Error `WrongToken -> loop state
       end
     | Error parse_error ->
       Stdio.Out_channel.(
         print_s [%message "Parse error" ~parse_error:(parse_error : Parser.error)]);
-      cycle state
+      loop state
   ;;
 
-  let run () = cycle M.WaitInitial
+  let run () = loop M.WaitInitial
 end
 
 module MakeCalculatorS (M : sig

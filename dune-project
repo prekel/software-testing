@@ -19,6 +19,14 @@
    (>= 4.08.0))
   dune
   (core :build)
+  (lwt :build)
   (ppx_jane :build)
   (bisect_ppx :with-test)
+  (ocaml-lsp-server
+   (and
+    :with-test
+    (= 1.9.1)))
+  (ocamlformat :with-test)
+  (ocamlformat-rpc :with-test)
+  (utop :with-test)
   (odoc :with-doc)))

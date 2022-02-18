@@ -7,36 +7,36 @@ let%test_module "parser" =
 
     let%expect_test "process_line" =
       print_s [%sexp (P.process_line "" : (P.token, P.error) Result.t)];
-      [%expect {| (Error NoParens) |}];
+      [%expect {| (Ok Empty) |}];
       print_s [%sexp (P.process_line "(" : (P.token, P.error) Result.t)];
-      [%expect {| (Error NoParens) |}];
+      [%expect {| (Error NoParensFail) |}];
       print_s [%sexp (P.process_line "()" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok Empty) |}];
+      [%expect {| (Ok ParenEmpty) |}];
       print_s [%sexp (P.process_line "( )" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok Empty) |}];
+      [%expect {| (Ok ParenEmpty) |}];
       print_s [%sexp (P.process_line "(  )" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok Empty) |}];
+      [%expect {| (Ok ParenEmpty) |}];
       print_s [%sexp (P.process_line "(             )" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok Empty) |}];
+      [%expect {| (Ok ParenEmpty) |}];
       print_s [%sexp (P.process_line "(12)" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok (OneNumber 12)) |}];
+      [%expect {| (Ok (ParenOneNumber 12)) |}];
       print_s [%sexp (P.process_line "(123)" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok (OneNumber 123)) |}];
+      [%expect {| (Ok (ParenOneNumber 123)) |}];
       print_s [%sexp (P.process_line "(123.12)" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok (OneNumber 123.12)) |}];
+      [%expect {| (Ok (ParenOneNumber 123.12)) |}];
       print_s [%sexp (P.process_line "(123q)" : (P.token, P.error) Result.t)];
       [%expect {| (Error OneNumberFail) |}];
       print_s [%sexp (P.process_line "(123,123)" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok (TwoNumbers 123 123)) |}];
+      [%expect {| (Ok (ParenTwoNumbers 123 123)) |}];
       print_s [%sexp (P.process_line "(123.12,123)" : (P.token, P.error) Result.t)];
-      [%expect {| (Ok (TwoNumbers 123.12 123)) |}];
+      [%expect {| (Ok (ParenTwoNumbers 123.12 123)) |}];
       print_s [%sexp (P.process_line "(arsa,asrt)" : (P.token, P.error) Result.t)];
       [%expect {| (Error TwoNumberFail) |}];
       print_s
         [%sexp
           (P.process_line "(1231, 123122222222222222222222222222222222221.2121)"
             : (P.token, P.error) Result.t)];
-      [%expect {| (Ok (TwoNumbers 1231 1.2312222222222223E+38)) |}];
+      [%expect {| (Ok (ParenTwoNumbers 1231 1.2312222222222223E+38)) |}];
       print_s
         [%sexp
           (P.process_line "(sntratroaeintstsrdrsatd.r.s,rnetrapl 283;9tp;hawlu)"
