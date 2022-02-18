@@ -1,7 +1,7 @@
 module MakeCalculator (M : sig
   include Calc.S
 
-  val token_to_action : Parser.token -> (action, bool) result
+  val token_to_action : Parser.token -> (action, [ `Quit | `WrongToken ]) result
 end) : sig
   val run : unit -> M.num option
 end
