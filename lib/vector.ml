@@ -30,7 +30,7 @@ module type VECTOR = sig
     val ( *.* ) : t -> t -> float
   end
 
-  val parse : string -> t option
+  val of_token : Parser.token -> t option
 end
 
 module MakeVecInfix (V : VEC) = struct
@@ -111,9 +111,8 @@ module Vector0 = struct
 
   let make = VZ.zero
 
-  let parse s =
-    match Parser.process_line s with
-    | Ok ParenEmpty -> Some make
+  let of_token = function
+    | Parser.ParenEmpty -> Some make
     | _ -> None
   ;;
 end
@@ -123,9 +122,8 @@ module Vector1 = struct
 
   let make a = of_vec a Vector0.make
 
-  let parse s =
-    match Parser.process_line s with
-    | Ok (ParenOneNumber x) -> Some (make x)
+  let of_token = function
+    | Parser.ParenOneNumber x -> Some (make x)
     | _ -> None
   ;;
 end
@@ -135,9 +133,8 @@ module Vector2 = struct
 
   let make a b = of_vec a (Vector1.make b)
 
-  let parse s =
-    match Parser.process_line s with
-    | Ok (ParenTwoNumbers (x, y)) -> Some (make x y)
+  let of_token = function
+    | Parser.ParenTwoNumbers (x, y) -> Some (make x y)
     | _ -> None
   ;;
 end

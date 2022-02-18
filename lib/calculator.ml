@@ -71,6 +71,28 @@ struct
   let run' = assert false
 end
 
+module MakeCalculatorVector (Vector : Vector.VECTOR) = struct
+  include MakeCalculator (struct
+    include Calc.MakeStateMachine (Calcs.MakeCalcsVector (Vector))
+
+    let token_to_action = function
+      | Parser.Number _ -> Error `WrongToken
+      | (ParenEmpty | ParenOneNumber _ | ParenTwoNumbers _) as token ->
+        (match Vector.of_token token with
+        | Some a -> Ok (Num a)
+        | None -> Error `WrongToken)
+      | OpPlus -> Ok (Op `Add)
+      | OpMinus -> Ok (Op `Sub)
+      | OpMult | OpDiv -> Error `WrongToken
+      | Back -> Ok Back
+      | Reset -> Ok Reset
+      | Calculate -> Ok Calculate
+      | Empty -> Ok Empty
+      | Quit -> Error `Quit
+    ;;
+  end)
+end
+
 module CalculatorFloat = MakeCalculator (struct
   include Calc.MakeStateMachine (Calcs.CalcsFloat)
 
@@ -89,58 +111,6 @@ module CalculatorFloat = MakeCalculator (struct
   ;;
 end)
 
-module CalculatorVector0 = MakeCalculator (struct
-  include Calc.MakeStateMachine (Calcs.CalcsVector0)
-
-  let token_to_action = function
-    | Parser.Number _ -> Error `WrongToken
-    | ParenEmpty -> Ok (Num Vector.Vector0.make)
-    | ParenOneNumber _ | ParenTwoNumbers _ -> Error `WrongToken
-    | OpPlus -> Ok (Op `Add)
-    | OpMinus -> Ok (Op `Sub)
-    | OpMult | OpDiv -> Error `WrongToken
-    | Back -> Ok Back
-    | Reset -> Ok Reset
-    | Calculate -> Ok Calculate
-    | Empty -> Ok Empty
-    | Quit -> Error `Quit
-  ;;
-end)
-
-module CalculatorVector1 = MakeCalculator (struct
-  include Calc.MakeStateMachine (Calcs.CalcsVector1)
-
-  let token_to_action = function
-    | Parser.Number _ -> Error `WrongToken
-    | ParenEmpty -> Error `WrongToken
-    | ParenOneNumber x -> Ok (Num (Vector.Vector1.make x))
-    | ParenTwoNumbers _ -> Error `WrongToken
-    | OpPlus -> Ok (Op `Add)
-    | OpMinus -> Ok (Op `Sub)
-    | OpMult | OpDiv -> Error `WrongToken
-    | Back -> Ok Back
-    | Reset -> Ok Reset
-    | Calculate -> Ok Calculate
-    | Empty -> Ok Empty
-    | Quit -> Error `Quit
-  ;;
-end)
-
-module CalculatorVector2 = MakeCalculator (struct
-  include Calc.MakeStateMachine (Calcs.CalcsVector2)
-
-  let token_to_action = function
-    | Parser.Number _ -> Error `WrongToken
-    | ParenEmpty -> Error `WrongToken
-    | ParenOneNumber _ -> Error `WrongToken
-    | ParenTwoNumbers (x, y) -> Ok (Num (Vector.Vector2.make x y))
-    | OpPlus -> Ok (Op `Add)
-    | OpMinus -> Ok (Op `Sub)
-    | OpMult | OpDiv -> Error `WrongToken
-    | Back -> Ok Back
-    | Reset -> Ok Reset
-    | Calculate -> Ok Calculate
-    | Empty -> Ok Empty
-    | Quit -> Error `Quit
-  ;;
-end)
+module CalculatorVector0 = MakeCalculatorVector (Vector.Vector0)
+module CalculatorVector1 = MakeCalculatorVector (Vector.Vector1)
+module CalculatorVector2 = MakeCalculatorVector (Vector.Vector2)

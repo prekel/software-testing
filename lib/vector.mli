@@ -67,7 +67,7 @@ module type VECTOR = sig
     val ( *.* ) : t -> t -> float
   end
 
-  val parse : string -> t option
+  val of_token : Parser.token -> t option
 end
 
 (** Degenerate vector (0 dimension) *)
