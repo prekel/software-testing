@@ -1,7 +1,7 @@
 open Core
 
 type error =
-  | NoParens
+  | NoParensFail
   | OneNumberFail
   | TwoNumberFail
   | TooMany
@@ -9,11 +9,18 @@ type error =
 
 type token =
   | Empty
-  | OneNumber of float
-  | TwoNumbers of float * float
+  | Number of float
+  | ParenEmpty
+  | ParenOneNumber of float
+  | ParenTwoNumbers of float * float
+  | OpPlus
+  | OpMinus
+  | OpMult
+  | OpDiv
   | Back
   | Reset
   | Calculate
+  | Quit
 [@@deriving sexp]
 
 let process_line line =
@@ -30,20 +37,34 @@ let process_line line =
       | [] ->
         (* String.split cannot return empty list *)
         assert false
-      | [ x ] when String.for_all ~f:Char.is_whitespace x -> Ok Empty
+      | [ x ] when String.for_all ~f:Char.is_whitespace x -> Ok ParenEmpty
       | [ x ] ->
         begin
           match Caml.Float.of_string_opt x with
-          | Some a -> Ok (OneNumber a)
+          | Some a -> Ok (ParenOneNumber a)
           | None -> Error OneNumberFail
         end
       | [ x; y ] ->
         begin
           match Caml.Float.of_string_opt x, Caml.Float.of_string_opt y with
-          | Some a, Some b -> Ok (TwoNumbers (a, b))
+          | Some a, Some b -> Ok (ParenTwoNumbers (a, b))
           | _ -> Error TwoNumberFail
         end
       | _ -> Error TooMany
     end
-  | None -> Error NoParens
+  | None ->
+    (match line with
+    | "" -> Ok Empty
+    | "+" -> Ok OpPlus
+    | "-" -> Ok OpMinus
+    | "*" -> Ok OpMult
+    | "/" -> Ok OpDiv
+    | "b" | "back" -> Ok Back
+    | "c" | "calc" | "calculate" | "=" -> Ok Calculate
+    | "r" | "reset" -> Ok Reset
+    | "q" | "quit" -> Ok Quit
+    | l ->
+      (match Caml.Float.of_string_opt l with
+      | Some num -> Ok (Number num)
+      | None -> Error NoParensFail))
 ;;

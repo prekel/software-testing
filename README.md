@@ -6,6 +6,7 @@ Requirements: [opam](https://opam.ocaml.org/).
 
 ```sh
 make switch
+eval $(opam env)
 make build
 make coverage
 ```

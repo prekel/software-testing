@@ -1,6 +1,6 @@
 (** [error] represents the parsing error *)
 type error =
-  | NoParens
+  | NoParensFail
   | OneNumberFail
   | TwoNumberFail
   | TooMany
@@ -9,11 +9,18 @@ type error =
 (** [token] represents the parsed token *)
 type token =
   | Empty
-  | OneNumber of float
-  | TwoNumbers of float * float
+  | Number of float
+  | ParenEmpty
+  | ParenOneNumber of float
+  | ParenTwoNumbers of float * float
+  | OpPlus
+  | OpMinus
+  | OpMult
+  | OpDiv
   | Back
   | Reset
   | Calculate
+  | Quit
 [@@deriving sexp]
 
 (** [process_line str] returns parsed token *)

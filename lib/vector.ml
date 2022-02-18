@@ -113,7 +113,7 @@ module Vector0 = struct
 
   let parse s =
     match Parser.process_line s with
-    | Ok Empty -> Some make
+    | Ok ParenEmpty -> Some make
     | _ -> None
   ;;
 end
@@ -125,7 +125,7 @@ module Vector1 = struct
 
   let parse s =
     match Parser.process_line s with
-    | Ok (OneNumber x) -> Some (make x)
+    | Ok (ParenOneNumber x) -> Some (make x)
     | _ -> None
   ;;
 end
@@ -137,7 +137,7 @@ module Vector2 = struct
 
   let parse s =
     match Parser.process_line s with
-    | Ok (TwoNumbers (x, y)) -> Some (make x y)
+    | Ok (ParenTwoNumbers (x, y)) -> Some (make x y)
     | _ -> None
   ;;
 end
