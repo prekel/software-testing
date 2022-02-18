@@ -23,31 +23,42 @@ struct
       loop state
   ;;
 
-  open Lwt
+  let run () = loop M.WaitInitial
 
-  let rec loop' state =
-    let open Lwt.Let_syntax in
-    let%bind () = Lwt_io.printl (Sexp.to_string [%sexp (state : M.state)]) in
-    match%bind Lwt_io.read_line Lwt_io.stdin >|= Parser.process_line with
+  open Lwt
+  open Lwt.Let_syntax
+
+  let rec loop' ~stream ~mvar state =
+    let%bind () = Lwt_mvar.put mvar (Sexp.to_string_hum [%sexp (state : M.state)]) in
+    match%bind Lwt_stream.next stream >|= Parser.process_line with
     | Ok token ->
       let action = M.token_to_action token in
       begin
         match action with
-        | Ok action -> M.update ~action state |> loop'
+        | Ok action -> M.update ~action state |> loop' ~stream ~mvar
         | Error `Quit -> return (M.result state)
-        | Error `WrongToken -> loop' state
+        | Error `WrongToken -> loop' ~stream ~mvar state
       end
     | Error parse_error ->
       let%bind () =
-        Lwt_io.printl
-          (Sexp.to_string
+        Lwt_mvar.put
+          mvar
+          (Sexp.to_string_hum
              [%message "Parse error" ~parse_error:(parse_error : Parser.error)])
       in
-      loop' state
+      loop' ~stream ~mvar state
   ;;
 
-  let run () = loop M.WaitInitial
-  let run' () = loop' M.WaitInitial
+  let run' () =
+    let stream = Lwt_stream.from (fun () -> Lwt_io.(read_line stdin) >|= Option.some) in
+    let mvar = Lwt_mvar.create_empty () in
+    let rec pr () =
+      let%bind v = Lwt_mvar.take mvar in
+      let%bind () = Lwt_io.printl v in
+      pr ()
+    in
+    Lwt.pick [ loop' ~stream ~mvar M.WaitInitial; pr () ]
+  ;;
 end
 
 module MakeCalculatorS (M : sig
