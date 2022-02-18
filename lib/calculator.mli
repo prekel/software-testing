@@ -14,9 +14,8 @@ end) : sig
   val run' : unit -> M.t option Lwt.t
 end
 
-module MakeCalculatorVector (Vector : Vector.VECTOR) : sig
-  include module type of MakeCalculatorS (Vector)
-end
+module MakeCalculatorVector (Vector : Vector.VECTOR) :
+    module type of MakeCalculatorS (Vector)
 
 module CalculatorFloat : module type of MakeCalculatorS (Float)
 module CalculatorVector0 : module type of MakeCalculatorS (Vector.Vector0)

@@ -78,9 +78,11 @@ module MakeCalculatorVector (Vector : Vector.VECTOR) = struct
     let token_to_action = function
       | Parser.Number _ -> Error `WrongToken
       | (ParenEmpty | ParenOneNumber _ | ParenTwoNumbers _) as token ->
-        (match Vector.of_token token with
-        | Some a -> Ok (Num a)
-        | None -> Error `WrongToken)
+        begin
+          match Vector.of_token token with
+          | Some a -> Ok (Num a)
+          | None -> Error `WrongToken
+        end
       | OpPlus -> Ok (Op `Add)
       | OpMinus -> Ok (Op `Sub)
       | OpMult | OpDiv -> Error `WrongToken

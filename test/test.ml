@@ -48,9 +48,9 @@ let%test_module "parser" =
   end)
 ;;
 
-module V0 = Vector.Vector0 
-module V1 = Vector.Vector1 
-module V2 = Vector.Vector2 
+module V0 = Vector.Vector0
+module V1 = Vector.Vector1
+module V2 = Vector.Vector2
 
 let%test_module "vector parsing tests" =
   (module struct
@@ -67,7 +67,9 @@ let%test_module "vector parsing tests" =
     ;;
 
     let%expect_test "parse vector0" =
-      let a = V0.parse "()" |> Option.value_exn in
+      let a =
+        Option.(Parser.process_line "()" |> Result.ok >>= V0.of_token |> value_exn)
+      in
       print_s [%sexp (a : V0.t)];
       [%expect {| () |}]
     ;;

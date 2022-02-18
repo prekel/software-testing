@@ -53,18 +53,20 @@ let process_line line =
       | _ -> Error TooMany
     end
   | None ->
-    (match line with
-    | "" -> Ok Empty
-    | "+" -> Ok OpPlus
-    | "-" -> Ok OpMinus
-    | "*" -> Ok OpMult
-    | "/" -> Ok OpDiv
-    | "b" | "back" -> Ok Back
-    | "c" | "calc" | "calculate" | "=" -> Ok Calculate
-    | "r" | "reset" -> Ok Reset
-    | "q" | "quit" -> Ok Quit
-    | l ->
-      (match Caml.Float.of_string_opt l with
-      | Some num -> Ok (Number num)
-      | None -> Error NoParensFail))
+    begin
+      match line with
+      | "" -> Ok Empty
+      | "+" -> Ok OpPlus
+      | "-" -> Ok OpMinus
+      | "*" -> Ok OpMult
+      | "/" -> Ok OpDiv
+      | "b" | "back" -> Ok Back
+      | "c" | "calc" | "calculate" | "=" -> Ok Calculate
+      | "r" | "reset" -> Ok Reset
+      | "q" | "quit" -> Ok Quit
+      | l ->
+        (match Caml.Float.of_string_opt l with
+        | Some num -> Ok (Number num)
+        | None -> Error NoParensFail)
+    end
 ;;
