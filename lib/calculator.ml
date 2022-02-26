@@ -23,8 +23,6 @@ struct
       loop state
   ;;
 
-  let run () = loop M.WaitInitial
-
   open Lwt
   open Lwt.Let_syntax
 
@@ -59,6 +57,8 @@ struct
     in
     Lwt.pick [ loop' ~stream ~mvar M.WaitInitial; pr () ]
   ;;
+
+  let run () = run' () |> Lwt_main.run
 end
 
 module MakeCalculatorS (M : sig

@@ -33,8 +33,10 @@ struct
     | `Sub -> Some (acc - arg)
     | `Mult -> Some (acc * arg)
     | `Div ->
-      (try Some (acc / arg) with
-      | _ -> None)
+      begin
+        try Some (acc / arg) with
+        | _ -> None
+      end
   ;;
 end
 
