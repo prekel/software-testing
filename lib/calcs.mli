@@ -1,12 +1,12 @@
 module type Calcs = sig
-  type num [@@deriving sexp]
-  type op [@@deriving sexp]
+  type num [@@deriving sexp, equal]
+  type op [@@deriving sexp, equal]
 
   val calculate : op -> num -> num -> num option
 end
 
 module MakeCalcsNumber (Number : sig
-  type t [@@deriving sexp]
+  type t [@@deriving sexp, equal]
 
   val ( + ) : t -> t -> t
   val ( - ) : t -> t -> t

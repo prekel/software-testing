@@ -1,8 +1,8 @@
 open Calcs
 
 module type S = sig
-  type num [@@deriving sexp]
-  type op [@@deriving sexp]
+  type num [@@deriving sexp, equal]
+  type op [@@deriving sexp, equal]
 
   type state =
     | WaitInitial
@@ -20,7 +20,7 @@ module type S = sig
     | ErrorInput of state
     | ErrorOperation of state
     | Finish of num
-  [@@deriving sexp]
+  [@@deriving sexp, equal]
 
   type action =
     | Num of num
@@ -30,7 +30,7 @@ module type S = sig
     | Calculate
     | Back
     | Reset
-  [@@deriving sexp]
+  [@@deriving sexp, equal]
 
   val initial : state
   val result : state -> num option
@@ -38,8 +38,8 @@ module type S = sig
 end
 
 module MakeStateMachine (Calcs : Calcs) = struct
-  type num = Calcs.num [@@deriving sexp]
-  type op = Calcs.op [@@deriving sexp]
+  type num = Calcs.num [@@deriving sexp, equal]
+  type op = Calcs.op [@@deriving sexp, equal]
 
   type state =
     | WaitInitial
@@ -57,7 +57,7 @@ module MakeStateMachine (Calcs : Calcs) = struct
     | ErrorInput of state
     | ErrorOperation of state
     | Finish of num
-  [@@deriving sexp]
+  [@@deriving sexp, equal]
 
   type action =
     | Num of num
@@ -67,7 +67,7 @@ module MakeStateMachine (Calcs : Calcs) = struct
     | Calculate
     | Back
     | Reset
-  [@@deriving sexp]
+  [@@deriving sexp, equal]
 
   let initial = WaitInitial
 

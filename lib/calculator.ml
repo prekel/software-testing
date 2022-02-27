@@ -23,10 +23,12 @@ struct
       loop state
   ;;
 
-  open Lwt
-  open Lwt.Let_syntax
+  let _ = loop
 
-  let rec loop' ~stream ~mvar state =
+  (* open Lwt *)
+  (* open Lwt.Let_syntax *)
+
+  (* let rec loop' ~stream ~mvar state =
     let%bind () = Lwt_mvar.put mvar (Sexp.to_string_hum [%sexp (state : M.state)]) in
     match%bind Lwt_stream.next stream >|= Parser.process_line with
     | Ok token ->
@@ -47,18 +49,15 @@ struct
       loop' ~stream ~mvar state
   ;;
 
-  let run' () =
-    let stream = Lwt_stream.from (fun () -> Lwt_io.(read_line stdin) >|= Option.some) in
-    let mvar = Lwt_mvar.create_empty () in
-    let rec pr () =
-      let%bind v = Lwt_mvar.take mvar in
-      let%bind () = Lwt_io.printl v in
-      pr ()
-    in
-    Lwt.pick [ loop' ~stream ~mvar M.WaitInitial; pr () ]
-  ;;
+  let _ = loop' *)
 
-  let run () = run' () |> Lwt_main.run
+  (* let run' () = let stream = Lwt_stream.from (fun () -> Lwt_io.(read_line stdin) >|=
+     Option.some) in let mvar = Lwt_mvar.create_empty () in let rec pr () = let%bind v =
+     Lwt_mvar.take mvar in let%bind () = Lwt_io.printl v in pr () in Lwt.pick [ loop'
+     ~stream ~mvar M.WaitInitial; pr () ] ;; *)
+  (* let run' () = assert false *)
+  let run () = assert false
+  (* let run () = run' () |> Lwt_main.run *)
 end
 
 module MakeCalculatorS (M : sig
@@ -68,7 +67,7 @@ struct
   type _t = M.t
 
   let run = assert false
-  let run' = assert false
+  (* let run' = assert false *)
 end
 
 module MakeCalculatorVector (Vector : Vector.VECTOR) = struct

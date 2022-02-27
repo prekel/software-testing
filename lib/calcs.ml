@@ -1,14 +1,14 @@
 open Core
 
 module type Calcs = sig
-  type num [@@deriving sexp]
-  type op [@@deriving sexp]
+  type num [@@deriving sexp, equal]
+  type op [@@deriving sexp, equal]
 
   val calculate : op -> num -> num -> num option
 end
 
 module MakeCalcsNumber (Number : sig
-  type t [@@deriving sexp]
+  type t [@@deriving sexp, equal]
 
   val ( + ) : t -> t -> t
   val ( - ) : t -> t -> t
@@ -16,7 +16,7 @@ module MakeCalcsNumber (Number : sig
   val ( / ) : t -> t -> t
 end) =
 struct
-  type num = Number.t [@@deriving sexp]
+  type num = Number.t [@@deriving sexp, equal]
 
   type op =
     [ `Add
@@ -24,7 +24,7 @@ struct
     | `Mult
     | `Div
     ]
-  [@@deriving sexp]
+  [@@deriving sexp, equal]
 
   let calculate op acc arg =
     let open Number in
@@ -44,13 +44,13 @@ module CalcsFloat = MakeCalcsNumber (Float)
 module CalcsInt = MakeCalcsNumber (Int)
 
 module MakeCalcsVector (Vector : Vector.VECTOR) = struct
-  type num = Vector.t [@@deriving sexp]
+  type num = Vector.t [@@deriving sexp, equal]
 
   type op =
     [ `Add
     | `Sub
     ]
-  [@@deriving sexp]
+  [@@deriving sexp, equal]
 
   let calculate op acc arg =
     let open Vector.Infix in
