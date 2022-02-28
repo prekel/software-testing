@@ -27,13 +27,17 @@ jobs:
             default: https://github.com/ocaml/opam-repository.git
             janestreet-bleeding: https://ocaml.janestreet.com/opam-repository
       
-      - run: opam install . --deps-only --with-test
+      - run: opam install . --deps-only
 
-      - run: opam exec -- dune build
-
-      - run: opam exec -- dune 
+      - run: opam exec -- dune build app --release
       
-      - name: Build artifact
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages
+          folder: _build/default/app
+      
+      - name: Artifact
         uses: actions/upload-artifact@v2
         with:
           name: _build
