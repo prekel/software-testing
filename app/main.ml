@@ -4,7 +4,6 @@ open Bonsai.Let_syntax
 open Lab03_parser
 module LC = Calcs
 module LS = Calc
-(* module LF = LS.MakeStateMachine (LC.CalcsFloat) *)
 
 let quit () =
   Js_of_ocaml.Dom_html.window##.location##reload;
