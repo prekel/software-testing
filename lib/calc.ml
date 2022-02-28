@@ -1,3 +1,4 @@
+open Core
 open Calcs
 
 module type S = sig
@@ -17,7 +18,7 @@ module type S = sig
         ; arg : num
         }
     | ErrorState of state
-    | ErrorInput of state
+    | ErrorInput of state * Error.t
     | ErrorOperation of state
     | Finish of num
   [@@deriving sexp, equal]
@@ -26,7 +27,7 @@ module type S = sig
     | Num of num
     | Op of op
     | Empty
-    | Invalid
+    | Invalid of Error.t
     | Calculate
     | Back
     | Reset
@@ -54,7 +55,7 @@ module MakeStateMachine (Calcs : Calcs) = struct
         ; arg : num
         }
     | ErrorState of state
-    | ErrorInput of state
+    | ErrorInput of state * Error.t
     | ErrorOperation of state
     | Finish of num
   [@@deriving sexp, equal]
@@ -63,7 +64,7 @@ module MakeStateMachine (Calcs : Calcs) = struct
     | Num of num
     | Op of op
     | Empty
-    | Invalid
+    | Invalid of Error.t
     | Calculate
     | Back
     | Reset
@@ -79,7 +80,7 @@ module MakeStateMachine (Calcs : Calcs) = struct
   let update ~action state =
     match state, action with
     | _, Reset -> WaitInitial
-    | _, Invalid -> ErrorInput state
+    | _, Invalid err -> ErrorInput (state, err)
     | WaitInitial, Num a -> WaitOperation { acc = a }
     | WaitInitial, (Op _ | Empty | Calculate) -> ErrorState state
     | WaitInitial, Back -> WaitInitial
@@ -96,8 +97,8 @@ module MakeStateMachine (Calcs : Calcs) = struct
       (match Calcs.calculate op acc arg with
       | Some acc -> WaitOperation { acc }
       | None -> ErrorOperation state)
-    | (ErrorState old_state | ErrorInput old_state | ErrorOperation old_state), Back ->
-      old_state
+    | (ErrorState old_state | ErrorInput (old_state, _) | ErrorOperation old_state), Back
+      -> old_state
     | (ErrorState _ | ErrorInput _ | ErrorOperation _), _ -> state
     | Finish _, _ -> state
   ;;

@@ -1,3 +1,5 @@
+open Core
+
 module type S = sig
   type num [@@deriving sexp, equal]
   type op [@@deriving sexp, equal]
@@ -15,7 +17,7 @@ module type S = sig
         ; arg : num
         }
     | ErrorState of state
-    | ErrorInput of state
+    | ErrorInput of state * Error.t
     | ErrorOperation of state
     | Finish of num
   [@@deriving sexp, equal]
@@ -24,7 +26,7 @@ module type S = sig
     | Num of num
     | Op of op
     | Empty
-    | Invalid
+    | Invalid of Error.t
     | Calculate
     | Back
     | Reset
