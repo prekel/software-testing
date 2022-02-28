@@ -31,14 +31,16 @@ jobs:
 
       - run: opam exec -- dune build app --release
       
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4.2.5
-        with:
-          branch: gh-pages
-          folder: _build/default/app
-      
       - name: Artifact
         uses: actions/upload-artifact@v2
         with:
           name: _build
           path: _build
+        
+      - run: mkdir build && cp _build/default/app/{index.html,main.bc.js} build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages
+          folder: build
