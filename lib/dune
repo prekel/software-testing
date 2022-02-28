@@ -3,6 +3,6 @@
  (public_name lab03-parser)
  (instrumentation
   (backend bisect_ppx))
- (libraries core )
+ (libraries core)
  (preprocess
   (pps ppx_jane)))

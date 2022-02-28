@@ -1,0 +1,8 @@
+(executable
+ (name main)
+ (public_name lab03-parser.lwt)
+ (instrumentation
+  (backend bisect_ppx))
+ (libraries core lwt lwt.unix lab03_parser)
+ (preprocess
+  (pps ppx_jane)))

@@ -65,8 +65,10 @@ let process_line line =
       | "r" | "reset" -> Ok Reset
       | "q" | "quit" -> Ok Quit
       | l ->
-        (match Caml.Float.of_string_opt l with
-        | Some num -> Ok (Number num)
-        | None -> Error NoParensFail)
+        begin
+          match Caml.Float.of_string_opt l with
+          | Some num -> Ok (Number num)
+          | None -> Error NoParensFail
+        end
     end
 ;;

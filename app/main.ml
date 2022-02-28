@@ -1,21 +1,15 @@
 open Core
 open Bonsai_web
 open Bonsai.Let_syntax
+open Js_of_ocaml
 open Lab03_parser
-module LC = Calcs
-module LS = Calc
 
-let quit () =
-  Js_of_ocaml.Dom_html.window##.location##reload;
+let quit () : never_returns =
+  Dom_html.window##.location##reload;
   failwith "Quit"
 ;;
 
-module MakeComponent (LF : sig
-  include LS.S
-
-  val line_to_action : string -> action
-end) =
-struct
+module MakeComponent (LF : Calculator.S) = struct
   let btn text action update =
     Vdom.(Node.button ~attr:(Attr.on_click (fun _ -> update action)) [ Node.text text ])
   ;;
@@ -27,7 +21,10 @@ struct
   let reset = btn "reset" LF.Reset
 
   let quit =
-    Vdom.(Node.button ~attr:(Attr.on_click (fun _ -> quit ())) [ Node.text "quit" ])
+    Vdom.(
+      Node.button
+        ~attr:(Attr.on_click (fun _ -> never_returns @@ quit ()))
+        [ Node.text "quit" ])
   ;;
 
   let btns update =
@@ -38,14 +35,9 @@ struct
 
   let btn update =
     let%sub text, set_text = Bonsai.state [%here] (module String) ~default_model:"" in
-    let%sub errtext, set_errtext =
-      Bonsai.state [%here] (module String) ~default_model:""
-    in
     let%arr text = text
     and set_text = set_text
-    and update = update
-    and errtext = errtext
-    and _set_errtext = set_errtext in
+    and update = update in
     let update a = Effect.(set_text "" >>= fun () -> update a) in
     let on_enter () = LF.line_to_action text |> update in
     Vdom.(
@@ -66,7 +58,6 @@ struct
             ]
         ; Node.button ~attr:(Attr.on_click (fun _ -> on_enter ())) [ Node.text "enter" ]
         ; btns update
-        ; Node.pre [ Node.text errtext ]
         ])
   ;;
 
@@ -95,99 +86,11 @@ struct
   ;;
 end
 
-module LF = MakeComponent (struct
-  module LF = LS.MakeStateMachine (LC.CalcsFloat)
-  include LF
-
-  let line_to_action line =
-    let open LF in
-    match Parser.process_line line with
-    | Ok token ->
-      begin
-        match token with
-        | Parser.Number num -> Num num
-        | ParenEmpty | ParenOneNumber _ | ParenTwoNumbers _ ->
-          Invalid (Error.create_s [%message "Wrong token" (token : Parser.token)])
-        | OpPlus -> Op `Add
-        | OpMinus -> Op `Sub
-        | OpMult -> Op `Mult
-        | OpDiv -> Op `Div
-        | Back -> Back
-        | Reset -> Reset
-        | Calculate -> Calculate
-        | Empty -> Empty
-        | Quit -> quit ()
-      end
-    | Error err -> Invalid (Error.create_s [%message "Parse error" (err : Parser.error)])
-  ;;
-end)
-
-module LI = MakeComponent (struct
-  module LF = LS.MakeStateMachine (LC.CalcsInt)
-  include LF
-
-  let line_to_action line =
-    let open LF in
-    match Parser.process_line line with
-    | Ok token ->
-      begin
-        match token with
-        | Parser.Number num -> Num (Int.of_float num)
-        | ParenEmpty | ParenOneNumber _ | ParenTwoNumbers _ ->
-          Invalid (Error.create_s [%message "Wrong token" (token : Parser.token)])
-        | OpPlus -> Op `Add
-        | OpMinus -> Op `Sub
-        | OpMult -> Op `Mult
-        | OpDiv -> Op `Div
-        | Back -> Back
-        | Reset -> Reset
-        | Calculate -> Calculate
-        | Empty -> Empty
-        | Quit -> quit ()
-      end
-    | Error err -> Invalid (Error.create_s [%message "Parse error" (err : Parser.error)])
-  ;;
-end)
-
-module MakeVectorComponet
-    (Vector : Vector.VECTOR)
-    (C : module type of LC.MakeCalcsVector (Vector) with type num = Vector.t) =
-    MakeComponent (struct
-  module LF = LS.MakeStateMachine (C)
-  include LF
-
-  let line_to_action line =
-    let open LF in
-    match Parser.process_line line with
-    | Ok token ->
-      begin
-        match token with
-        | Parser.Number _ ->
-          Invalid (Error.create_s [%message "Wrong token" (token : Parser.token)])
-        | (ParenEmpty | ParenOneNumber _ | ParenTwoNumbers _) as token ->
-          begin
-            match Vector.of_token token with
-            | Some a -> Num a
-            | None ->
-              Invalid (Error.create_s [%message "Wrong token" (token : Parser.token)])
-          end
-        | OpPlus -> Op `Add
-        | OpMinus -> Op `Sub
-        | OpMult | OpDiv ->
-          Invalid (Error.create_s [%message "Wrong token" (token : Parser.token)])
-        | Back -> Back
-        | Reset -> Reset
-        | Calculate -> Calculate
-        | Empty -> Empty
-        | Quit -> quit ()
-      end
-    | Error err -> Invalid (Error.create_s [%message "Parse error" (err : Parser.error)])
-  ;;
-end)
-
-module L0 = MakeVectorComponet (Vector.Vector0) (LC.CalcsVector0)
-module L1 = MakeVectorComponet (Vector.Vector1) (LC.CalcsVector1)
-module L2 = MakeVectorComponet (Vector.Vector2) (LC.CalcsVector2)
+module LF = MakeComponent (Calculator.CalculatorFloat)
+module LI = MakeComponent (Calculator.CalculatorInt)
+module L0 = MakeComponent (Calculator.CalculatorVector0)
+module L1 = MakeComponent (Calculator.CalculatorVector1)
+module L2 = MakeComponent (Calculator.CalculatorVector2)
 
 module Var = struct
   type t =
@@ -201,7 +104,7 @@ end
 
 let component =
   let%sub state, set_state = Bonsai.state [%here] (module Var) ~default_model:Var.Float in
-  let name = "abc" in
+  let name = "variants" in
   let%sub lf = LF.statelf in
   let%sub li = LI.statelf in
   let%sub l0 = L0.statelf in
@@ -214,8 +117,8 @@ let component =
   and l0 = l0
   and l1 = l1
   and l2 = l2 in
-  let radio v a =
-    Vdom.(
+  Vdom.(
+    let radio v a =
       Node.div
         [ Node.input
             ~attr:
@@ -228,9 +131,8 @@ let component =
                  ])
             []
         ; Node.label [ Node.text v ]
-        ])
-  in
-  Vdom.(
+        ]
+    in
     Node.div
       [ (match state with
         | Float -> lf

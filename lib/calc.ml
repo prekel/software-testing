@@ -80,7 +80,6 @@ module MakeStateMachine (Calcs : Calcs) = struct
   let update ~action state =
     match state, action with
     | _, Reset -> WaitInitial
-    | _, Invalid err -> ErrorInput (state, err)
     | WaitInitial, Num a -> WaitOperation { acc = a }
     | WaitInitial, (Op _ | Empty | Calculate) -> ErrorState state
     | WaitInitial, Back -> WaitInitial
@@ -94,12 +93,16 @@ module MakeStateMachine (Calcs : Calcs) = struct
     | Calculation _, (Empty | Num _ | Op _) -> ErrorState state
     | Calculation { acc; op; _ }, Back -> WaitArgument { acc; op }
     | Calculation { acc; op; arg }, Calculate ->
-      (match Calcs.calculate op acc arg with
-      | Some acc -> WaitOperation { acc }
-      | None -> ErrorOperation state)
+      begin
+        match Calcs.calculate op acc arg with
+        | Some acc -> WaitOperation { acc }
+        | None -> ErrorOperation state
+      end
+    | Finish _, _ -> state
+    | ErrorInput (old_state, _), Invalid err -> ErrorInput (old_state, err)
     | (ErrorState old_state | ErrorInput (old_state, _) | ErrorOperation old_state), Back
       -> old_state
     | (ErrorState _ | ErrorInput _ | ErrorOperation _), _ -> state
-    | Finish _, _ -> state
+    | _, Invalid err -> ErrorInput (state, err)
   ;;
 end
