@@ -41,7 +41,7 @@ jobs:
 
   test-playwright: 
     needs: build
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: app_test
