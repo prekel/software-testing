@@ -79,3 +79,21 @@ coverage: ## Run coverage
 	find . -name '*.coverage' | xargs rm -f
 	opam exec -- dune runtest --instrument-with bisect_ppx --force
 	bisect-ppx-report html
+
+.PHONY: serve_coverage
+serve_coverage:
+	http-server _coverage
+
+.PHONY: build_bundle
+build_bundle:
+	opam exec -- dune build app --release
+
+.PHONY: serve_bundle
+serve_bundle:
+	http-server _build/default/app
+
+.PHONY: copy_bundle
+copy_bundle:
+	mkdir build -p  
+	cp -f ./_build/default/app/index.html build
+	cp -f ./_build/default/app/main.bc.js build

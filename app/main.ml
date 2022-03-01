@@ -47,9 +47,9 @@ module MakeComponent (LF : Calculator.S) = struct
             ~attr:
               (Attr.on_submit (fun _ ->
                    Effect.Many
-                     [ on_enter ()
-                     ; Vdom.Effect.Prevent_default
+                     [ Vdom.Effect.Prevent_default
                      ; Vdom.Effect.Stop_propagation
+                     ; on_enter ()
                      ]))
             [ Node.input
                 ~attr:
