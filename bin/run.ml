@@ -1,5 +1,5 @@
 open Core
-open Lab03_parser
+open Lab_calculator
 
 module MakeRun (M : Calculator.S) = struct
   let rec loop state =

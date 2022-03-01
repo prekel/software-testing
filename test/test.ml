@@ -1,5 +1,5 @@
 open Core
-open Lab03_parser
+open Lab_calculator
 
 let%test_module "parser" =
   (module struct
@@ -121,8 +121,8 @@ module V2 = Vector.Vector2
 let%test_module "vector parsing tests" =
   (module struct
     let%expect_test "" =
-      let a = Lab03_parser.Parser.Empty in
-      print_s [%sexp (a : Lab03_parser.Parser.token)];
+      let a = Parser.Empty in
+      print_s [%sexp (a : Parser.token)];
       [%expect {| Empty |}]
     ;;
 

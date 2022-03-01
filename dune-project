@@ -1,6 +1,6 @@
 (lang dune 2.7)
 
-(name lab03-parser)
+(name lab-calculator)
 
 (license MIT)
 
@@ -11,7 +11,7 @@
 (generate_opam_files true)
 
 (package
- (name lab03-parser)
+ (name lab-calculator)
  (synopsis "A short, but powerful statement about your project")
  (description "A short, but powerful statement about your project")
  (depends

@@ -1,6 +1,6 @@
 (library
- (name lab03_parser_test)
- (libraries core lab03_parser)
+ (name lab_calculator_test)
+ (libraries core lab_calculator)
  (preprocess
   (pps ppx_jane))
  (inline_tests))

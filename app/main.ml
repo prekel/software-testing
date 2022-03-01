@@ -2,7 +2,7 @@ open Core
 open Bonsai_web
 open Bonsai.Let_syntax
 open Js_of_ocaml
-open Lab03_parser
+open Lab_calculator
 
 let quit () : never_returns =
   Dom_html.window##.location##reload;

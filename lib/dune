@@ -1,6 +1,6 @@
 (library
- (name lab03_parser)
- (public_name lab03-parser)
+ (name lab_calculator)
+ (public_name lab-calculator)
  (instrumentation
   (backend bisect_ppx))
  (libraries core)

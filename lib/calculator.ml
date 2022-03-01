@@ -6,7 +6,7 @@ module type S = sig
   val line_to_action : ?quit:(unit -> never_returns) -> string -> action
 end
 
-let q (quit : (unit -> never_returns) option) =
+let q quit =
   match quit with
   | Some quit -> never_returns @@ quit ()
   | None -> failwith "Quit"
