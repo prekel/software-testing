@@ -7,7 +7,8 @@
     "serve": "http-server -p 8080 ../build",
     "dev": "http-server -p 8080 ../_build/default/app",
     "test": "cross-env APP_URL=http://127.0.0.1:8080 playwright test tests/app.spec.ts",
-    "test-prod": "cross-env APP_URL=https://prekel.github.io/software-testing playwright test tests/app.spec.ts"
+    "test-prod": "cross-env APP_URL=https://prekel.github.io/software-testing playwright test tests/app.spec.ts",
+    "show-report": "http-server playwright-report"
   },
   "keywords": [],
   "author": "",

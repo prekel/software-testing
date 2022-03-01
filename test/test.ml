@@ -45,6 +45,72 @@ let%test_module "parser" =
       print_s [%sexp (P.process_line "(1,2,3)" : (P.token, P.error) Result.t)];
       [%expect {| (Error TooMany) |}]
     ;;
+
+    let%expect_test "to 100 percent" =
+      print_s [%sexp (P.process_line "+" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok OpPlus) |}];
+      print_s [%sexp (P.process_line "-" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok OpMinus) |}];
+      print_s [%sexp (P.process_line "*" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok OpMult) |}];
+      print_s [%sexp (P.process_line "/" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok OpDiv) |}];
+      print_s [%sexp (P.process_line "b" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Back) |}];
+      print_s [%sexp (P.process_line "back" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Back) |}];
+      print_s [%sexp (P.process_line "c" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Calculate) |}];
+      print_s [%sexp (P.process_line "calc" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Calculate) |}];
+      print_s [%sexp (P.process_line "calculate" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Calculate) |}];
+      print_s [%sexp (P.process_line "=" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Calculate) |}];
+      print_s [%sexp (P.process_line "r" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Reset) |}];
+      print_s [%sexp (P.process_line "reset" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Reset) |}];
+      print_s [%sexp (P.process_line "quit" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Quit) |}];
+      print_s [%sexp (P.process_line "q" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok Quit) |}];
+      print_s [%sexp (P.process_line "123" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok (Number 123)) |}];
+      print_s [%sexp (P.process_line "-123" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok (Number -123)) |}];
+      print_s [%sexp (P.process_line "-0" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok (Number -0)) |}];
+      print_s [%sexp (P.process_line "0" : (P.token, P.error) Result.t)];
+      [%expect {| (Ok (Number 0)) |}];
+      [%sexp (P.Empty : P.token)] |> P.token_of_sexp |> P.sexp_of_token |> print_s;
+      [%expect {| Empty |}];
+      [%sexp (P.Number 123123. : P.token)]
+      |> P.token_of_sexp
+      |> P.sexp_of_token
+      |> print_s;
+      [%expect {| (Number 123123) |}];
+      [%sexp (P.ParenEmpty : P.token)] |> P.token_of_sexp |> P.sexp_of_token |> print_s;
+      [%expect {| ParenEmpty |}];
+      [%sexp (P.ParenOneNumber 2131. : P.token)]
+      |> P.token_of_sexp
+      |> P.sexp_of_token
+      |> print_s;
+      [%expect {| (ParenOneNumber 2131) |}];
+      [%sexp (P.ParenTwoNumbers (12312., 1231.) : P.token)]
+      |> P.token_of_sexp
+      |> P.sexp_of_token
+      |> print_s;
+      [%expect {| (ParenTwoNumbers 12312 1231) |}];
+      [%sexp (P.NoParensFail : P.error)] |> P.error_of_sexp |> P.sexp_of_error |> print_s;
+      [%expect {| NoParensFail |}];
+      [%sexp (P.OneNumberFail : P.error)] |> P.error_of_sexp |> P.sexp_of_error |> print_s;
+      [%expect {| OneNumberFail |}];
+      [%sexp (P.TwoNumberFail : P.error)] |> P.error_of_sexp |> P.sexp_of_error |> print_s;
+      [%expect {| TwoNumberFail |}];
+      [%sexp (P.TooMany : P.error)] |> P.error_of_sexp |> P.sexp_of_error |> print_s;
+      [%expect {| TooMany |}]
+    ;;
   end)
 ;;
 
@@ -105,6 +171,13 @@ let%test_module "triple_or and triple_and tests" =
       TrAO.triple_and (module Int) 1 2 3 |> print_bool;
       [%expect {| false |}];
       TrAO.triple_or (module Int) 1 1 3 |> print_bool;
+      [%expect {| true |}]
+    ;;
+
+    let%expect_test "to 100 percent" =
+      TrAO.triple_or (module Int) 2 1 1 |> print_bool;
+      [%expect {| true |}];
+      TrAO.triple_or (module Int) 0 1 0 |> print_bool;
       [%expect {| true |}]
     ;;
   end)
