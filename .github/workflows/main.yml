@@ -33,6 +33,12 @@ jobs:
         
       - run: mkdir build && cp _build/default/app/{index.html,main.bc.js} build
 
+      - name: Artifact bundle
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.2.5
         with:
@@ -46,6 +52,12 @@ jobs:
       run:
         working-directory: app_test
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Download bundle
+        uses: actions/download-artifact@v2
+        with:
+          name: build
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'

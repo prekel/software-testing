@@ -12,3 +12,10 @@ eval $(opam env)
 make build
 make coverage
 ```
+
+## 
+
+```
+mkdir build
+cp _build/default/app/{index.html,main.bc.js} build
+```
