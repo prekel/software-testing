@@ -88,8 +88,8 @@ serve_coverage:
 build_bundle:
 	opam exec -- dune build app --release
 
-.PHONY: serve_bundle
-serve_bundle:
+.PHONY: serve_app
+serve_app:
 	http-server _build/default/app
 
 .PHONY: copy_bundle
@@ -97,3 +97,8 @@ copy_bundle:
 	mkdir build -p  
 	cp -f ./_build/default/app/index.html build
 	cp -f ./_build/default/app/main.bc.js build
+
+
+.PHONY: serve_bundle
+serve_bundle:
+	http-server build

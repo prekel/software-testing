@@ -11,7 +11,10 @@ let quit () : never_returns =
 
 module MakeComponent (LF : Calculator.S) = struct
   let btn text action update =
-    Vdom.(Node.button ~attr:(Attr.on_click (fun _ -> update action)) [ Node.text text ])
+    Vdom.(
+      Node.button
+        ~attr:(Attr.many [ Attr.class_ text; Attr.on_click (fun _ -> update action) ])
+        [ Node.text text ])
   ;;
 
   let back = btn "back" LF.Back
@@ -23,7 +26,9 @@ module MakeComponent (LF : Calculator.S) = struct
   let quit =
     Vdom.(
       Node.button
-        ~attr:(Attr.on_click (fun _ -> never_returns @@ quit ()))
+        ~attr:
+          (Attr.many
+             [ Attr.class_ "quit"; Attr.on_click (fun _ -> never_returns @@ quit ()) ])
         [ Node.text "quit" ])
   ;;
 
@@ -33,7 +38,7 @@ module MakeComponent (LF : Calculator.S) = struct
         [ back update; calc update; empty update; invalid update; reset update; quit ])
   ;;
 
-  let btn update =
+  let form update =
     let%sub text, set_text = Bonsai.state [%here] (module String) ~default_model:"" in
     let%arr text = text
     and set_text = set_text
@@ -45,23 +50,32 @@ module MakeComponent (LF : Calculator.S) = struct
         [ Node.create
             "form"
             ~attr:
-              (Attr.on_submit (fun _ ->
-                   Effect.Many
-                     [ Vdom.Effect.Prevent_default
-                     ; Vdom.Effect.Stop_propagation
-                     ; on_enter ()
-                     ]))
+              (Attr.many
+                 [ Attr.on_submit (fun _ ->
+                       Effect.Many
+                         [ Vdom.Effect.Prevent_default
+                         ; Vdom.Effect.Stop_propagation
+                         ; on_enter ()
+                         ])
+                 ])
             [ Node.input
                 ~attr:
-                  (Attr.many [ Attr.on_input (fun _ -> set_text); Attr.value_prop text ])
+                  (Attr.many
+                     [ Attr.class_ "form"
+                     ; Attr.on_input (fun _ -> set_text)
+                     ; Attr.value_prop text
+                     ])
                 []
             ]
-        ; Node.button ~attr:(Attr.on_click (fun _ -> on_enter ())) [ Node.text "enter" ]
+        ; Node.button
+            ~attr:
+              (Attr.many [ Attr.class_ "enter"; Attr.on_click (fun _ -> on_enter ()) ])
+            [ Node.text "enter" ]
         ; btns update
         ])
   ;;
 
-  let statelf =
+  let component =
     let%sub state, update =
       Bonsai.state_machine0
         [%here]
@@ -75,13 +89,15 @@ module MakeComponent (LF : Calculator.S) = struct
         ~apply_action:(fun ~inject:_ ~schedule_event:_ state action ->
           LF.update ~action state)
     in
-    let%sub btn = btn update in
+    let%sub form = form update in
     let%arr state = state
-    and btn = btn in
+    and form = form in
     Vdom.(
       Node.div
-        [ Node.pre [ [%sexp (state : LF.state)] |> Sexp.to_string_hum |> Node.text ]
-        ; btn
+        [ Node.pre
+            ~attr:(Attr.many [ Attr.class_ "state" ])
+            [ [%sexp (state : LF.state)] |> Sexp.to_string_hum |> Node.text ]
+        ; form
         ])
   ;;
 end
@@ -102,14 +118,14 @@ module Var = struct
   [@@deriving sexp, equal]
 end
 
-let component =
+let app =
   let%sub state, set_state = Bonsai.state [%here] (module Var) ~default_model:Var.Float in
   let name = "variants" in
-  let%sub lf = LF.statelf in
-  let%sub li = LI.statelf in
-  let%sub l0 = L0.statelf in
-  let%sub l1 = L1.statelf in
-  let%sub l2 = L2.statelf in
+  let%sub lf = LF.component in
+  let%sub li = LI.component in
+  let%sub l0 = L0.component in
+  let%sub l1 = L1.component in
+  let%sub l2 = L2.component in
   let%arr state = state
   and set_state = set_state
   and lf = lf
@@ -123,7 +139,8 @@ let component =
         [ Node.input
             ~attr:
               (Attr.many
-                 [ Attr.type_ "radio"
+                 [ Attr.class_ ("radio-" ^ v)
+                 ; Attr.type_ "radio"
                  ; Attr.name name
                  ; Attr.value v
                  ; Attr.on_change (fun _ _ -> set_state a)
@@ -149,5 +166,5 @@ let component =
 ;;
 
 let (_ : _ Start.Handle.t) =
-  Start.start Start.Result_spec.just_the_view ~bind_to_element_with_id:"app" component
+  Start.start Start.Result_spec.just_the_view ~bind_to_element_with_id:"app" app
 ;;
