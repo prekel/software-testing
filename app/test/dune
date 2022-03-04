@@ -1,0 +1,12 @@
+(library
+ (name lab_calculator_app_lib_test)
+ (libraries
+  core
+  lab_calculator_app_lib
+  bonsai.web_test
+  bonsai.web
+  async_kernel)
+ (inline_tests
+  (modes js))
+ (preprocess
+  (pps js_of_ocaml-ppx ppx_jane)))
