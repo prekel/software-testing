@@ -151,6 +151,7 @@ let app =
         ]
     in
     Node.div
+      ~attr:(Attr.class_ "root")
       [ (match state with
         | Float -> lf
         | Int -> li
