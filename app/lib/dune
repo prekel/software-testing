@@ -1,5 +1,5 @@
 (library
  (name lab_calculator_app_lib)
- (libraries core bonsai.web lab_calculator async_kernel)
+ (libraries core bonsai.web lab_calculator)
  (preprocess
   (pps js_of_ocaml-ppx ppx_jane)))
